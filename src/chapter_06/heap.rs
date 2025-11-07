@@ -212,7 +212,7 @@ pub fn build_max_heap<T: Ord>(arr: &mut [T]) {
     if heap_size <= 1 {
         return;
     }
-    
+
     // Start from the last parent node (index of last node's parent)
     let start = (heap_size / 2) - 1;
     for i in (0..=start).rev() {
@@ -239,7 +239,7 @@ pub fn build_min_heap<T: Ord>(arr: &mut [T]) {
     if heap_size <= 1 {
         return;
     }
-    
+
     let start = (heap_size / 2) - 1;
     for i in (0..=start).rev() {
         min_heapify(arr, heap_size, i);
@@ -324,10 +324,18 @@ mod tests {
             let l = left(i);
             let r = right(i);
             if l < arr.len() {
-                assert!(arr[i] <= arr[l], "Min-heap property violated at index {}", i);
+                assert!(
+                    arr[i] <= arr[l],
+                    "Min-heap property violated at index {}",
+                    i
+                );
             }
             if r < arr.len() {
-                assert!(arr[i] <= arr[r], "Min-heap property violated at index {}", i);
+                assert!(
+                    arr[i] <= arr[r],
+                    "Min-heap property violated at index {}",
+                    i
+                );
             }
         }
     }
@@ -346,4 +354,3 @@ mod tests {
         assert_eq!(arr, vec![42]);
     }
 }
-

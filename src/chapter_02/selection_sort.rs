@@ -27,17 +27,17 @@
 /// `i` elements in sorted order.
 pub fn selection_sort<T: Ord + Clone>(arr: &mut [T]) {
     let n = arr.len();
-    
+
     if n <= 1 {
         return;
     }
-    
+
     // CLRS: for i = 1 to n - 1 (1-based)
     // Rust: for i in 0..n-1 (0-based)
     for i in 0..n - 1 {
         // minIndex = i in CLRS (1-based)
         let mut min_index = i;
-        
+
         // CLRS: for j = i + 1 to n (1-based)
         // Rust: for j in (i+1)..n (0-based)
         for j in (i + 1)..n {
@@ -46,7 +46,7 @@ pub fn selection_sort<T: Ord + Clone>(arr: &mut [T]) {
                 min_index = j;
             }
         }
-        
+
         // CLRS: swap(A[i], A[minIndex])
         arr.swap(i, min_index);
     }
@@ -91,4 +91,3 @@ mod tests {
         assert_eq!(arr, vec![1, 2, 3, 4, 5]);
     }
 }
-

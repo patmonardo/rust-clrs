@@ -286,11 +286,11 @@ mod tests {
     fn test_queue_basic() {
         let mut queue = Queue::new(5);
         assert!(queue.is_empty());
-        
+
         queue.enqueue(1).unwrap();
         queue.enqueue(2).unwrap();
         queue.enqueue(3).unwrap();
-        
+
         assert_eq!(queue.dequeue(), Some(1));
         assert_eq!(queue.dequeue(), Some(2));
         assert_eq!(queue.dequeue(), Some(3));
@@ -330,7 +330,7 @@ mod tests {
         deque.head_enqueue(1).unwrap();
         deque.tail_enqueue(2).unwrap();
         deque.head_enqueue(0).unwrap();
-        
+
         assert_eq!(deque.head_dequeue(), Some(0));
         assert_eq!(deque.tail_dequeue(), Some(2));
         assert_eq!(deque.head_dequeue(), Some(1));
@@ -342,7 +342,7 @@ mod tests {
         queue.enqueue(1);
         queue.enqueue(2);
         queue.enqueue(3);
-        
+
         assert_eq!(queue.dequeue(), Some(1));
         assert_eq!(queue.dequeue(), Some(2));
         queue.enqueue(4);
@@ -350,4 +350,3 @@ mod tests {
         assert_eq!(queue.dequeue(), Some(4));
     }
 }
-

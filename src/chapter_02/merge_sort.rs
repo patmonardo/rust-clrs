@@ -22,30 +22,30 @@ pub fn merge<T: Ord + Clone>(arr: &mut [T], p: usize, q: usize, r: usize) {
     let n1 = q - p + 1;
     // CLRS: n2 = r - q (1-based: q+1..r inclusive)
     let n2 = r - q;
-    
+
     // CLRS: let L[1..n1] and R[1..n2] be new arrays
     let mut left = Vec::with_capacity(n1);
     let mut right = Vec::with_capacity(n2);
-    
+
     // CLRS: for i = 1 to n1, L[i] = A[p + i - 1]
     // In 0-based: L[i] = A[p + i]
     for i in 0..n1 {
         left.push(arr[p + i].clone());
     }
-    
+
     // CLRS: for j = 1 to n2, R[j] = A[q + j]
     // In 0-based: R[j] = A[q + 1 + j]
     for j in 0..n2 {
         right.push(arr[q + 1 + j].clone());
     }
-    
+
     // Merge using sentinels approach (simpler) or the version without sentinels
     // Using sentinels: add infinity to the end of each array
     // For now, we'll use the version without sentinels (Exercise 2.3-2)
     let mut i = 0;
     let mut j = 0;
     let mut k = p;
-    
+
     // CLRS: for k = p to r
     while i < n1 && j < n2 {
         // CLRS: if L[i] ≤ R[j]
@@ -58,14 +58,14 @@ pub fn merge<T: Ord + Clone>(arr: &mut [T], p: usize, q: usize, r: usize) {
         }
         k += 1;
     }
-    
+
     // Copy remaining elements
     while i < n1 {
         arr[k] = left[i].clone();
         i += 1;
         k += 1;
     }
-    
+
     while j < n2 {
         arr[k] = right[j].clone();
         j += 1;
@@ -98,13 +98,13 @@ pub fn merge_sort<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize) {
     if p < r {
         // CLRS: q = floor((p + r) / 2)
         let q = (p + r) / 2;
-        
+
         // CLRS: MERGE-SORT(A, p, q)
         merge_sort(arr, p, q);
-        
+
         // CLRS: MERGE-SORT(A, q + 1, r)
         merge_sort(arr, q + 1, r);
-        
+
         // CLRS: MERGE(A, p, q, r)
         merge(arr, p, q, r);
     }
@@ -172,4 +172,3 @@ mod tests {
         assert_eq!(arr, vec![1, 2, 3, 4, 5, 6]);
     }
 }
-

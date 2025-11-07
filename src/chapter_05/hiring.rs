@@ -44,12 +44,12 @@ pub fn hire_assistant(candidates: &[i32]) -> HiringResult {
             best_candidate_index: None,
         };
     }
-    
+
     // CLRS: best = 0 (we assume candidate 0 is the least-qualified dummy candidate)
     // Actually, in CLRS, the first candidate is always hired
     let mut best = 0;
     let mut hire_count = 1; // First candidate is always hired
-    
+
     // CLRS: for i = 1 to n
     for i in 1..candidates.len() {
         // CLRS: interview candidate i
@@ -60,7 +60,7 @@ pub fn hire_assistant(candidates: &[i32]) -> HiringResult {
             hire_count += 1;
         }
     }
-    
+
     HiringResult {
         hire_count,
         best_candidate_index: Some(best),
@@ -85,13 +85,13 @@ pub fn expected_hires(n: usize) -> f64 {
     if n == 0 {
         return 0.0;
     }
-    
+
     let mut sum = 0.0;
     // E[hires] = ∑(1/i) for i=1 to n = H_n (n-th harmonic number)
     for i in 1..=n {
         sum += 1.0 / (i as f64);
     }
-    
+
     sum
 }
 
@@ -148,13 +148,12 @@ mod tests {
     fn test_expected_hires() {
         // For n=1, expected hires = 1
         assert!((expected_hires(1) - 1.0).abs() < f64::EPSILON);
-        
+
         // For n=2, expected hires = 1 + 1/2 = 1.5
         assert!((expected_hires(2) - 1.5).abs() < f64::EPSILON);
-        
+
         // For n=10, expected hires ≈ 2.93
         let e10 = expected_hires(10);
         assert!(e10 > 2.5 && e10 < 3.5);
     }
 }
-

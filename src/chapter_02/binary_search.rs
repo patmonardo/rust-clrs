@@ -33,15 +33,15 @@ pub fn iterative_binary_search<T: Ord>(arr: &[T], v: &T, low: usize, high: usize
     if arr.is_empty() || low > high || high >= arr.len() {
         return None;
     }
-    
+
     let mut low = low;
     let mut high = high;
-    
+
     // CLRS: while low ≤ high
     while low <= high {
         // CLRS: mid = floor((low + high) / 2)
         let mid = (low + high) / 2;
-        
+
         // CLRS: if v == A[mid]
         if arr[mid] == *v {
             return Some(mid);
@@ -57,7 +57,7 @@ pub fn iterative_binary_search<T: Ord>(arr: &[T], v: &T, low: usize, high: usize
             high = mid.checked_sub(1)?;
         }
     }
-    
+
     // CLRS: return NIL
     None
 }
@@ -93,10 +93,10 @@ pub fn recursive_binary_search<T: Ord>(arr: &[T], v: &T, low: usize, high: usize
         // CLRS: return NIL
         return None;
     }
-    
+
     // CLRS: mid = floor((low + high) / 2)
     let mid = (low + high) / 2;
-    
+
     // CLRS: if v == A[mid]
     if arr[mid] == *v {
         Some(mid)
@@ -167,4 +167,3 @@ mod tests {
         assert_eq!(binary_search(&arr, &10), None);
     }
 }
-

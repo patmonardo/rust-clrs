@@ -24,9 +24,7 @@
 /// let sorted = sort_restaurants_by_price(restaurants);
 /// assert_eq!(sorted[0].1, 15.0);
 /// ```
-pub fn sort_restaurants_by_price(
-    mut restaurants: Vec<(&str, f64)>,
-) -> Vec<(&str, f64)> {
+pub fn sort_restaurants_by_price(mut restaurants: Vec<(&str, f64)>) -> Vec<(&str, f64)> {
     restaurants.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
     restaurants
 }
@@ -73,7 +71,7 @@ impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList { head: None }
     }
-    
+
     /// Insert at the beginning - O(1) operation (strength)
     pub fn push_front(&mut self, data: T) {
         let new_node = Box::new(Node {
@@ -82,7 +80,7 @@ impl<T> SimpleLinkedList<T> {
         });
         self.head = Some(new_node);
     }
-    
+
     /// Get element at index - O(n) operation (limitation)
     pub fn get(&self, index: usize) -> Option<&T> {
         let mut current = self.head.as_ref();
@@ -111,21 +109,21 @@ impl PathProblem {
     pub fn new(nodes: Vec<(f64, f64)>) -> Self {
         PathProblem { nodes }
     }
-    
+
     /// Compute distance between two nodes
     pub fn distance(&self, i: usize, j: usize) -> f64 {
         let (x1, y1) = self.nodes[i];
         let (x2, y2) = self.nodes[j];
         ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
     }
-    
+
     /// Shortest path from start to end (simple problem)
     pub fn shortest_path(&self, start: usize, end: usize) -> f64 {
         // Simplified: just return direct distance
         // In practice, would use Dijkstra's algorithm
         self.distance(start, end)
     }
-    
+
     /// Traveling salesman: visit all nodes exactly once and return to start
     /// This is much harder due to the "visit all exactly once" constraint
     pub fn tsp_brute_force(&self) -> Option<f64> {
@@ -133,27 +131,22 @@ impl PathProblem {
             // Too many combinations for brute force
             return None;
         }
-        
+
         // Brute force: try all permutations
         let mut min_distance = f64::INFINITY;
         let mut indices: Vec<usize> = (1..self.nodes.len()).collect();
-        
+
         // Generate all permutations and find minimum
         self.permute_and_evaluate(&mut indices, 0, &mut min_distance);
-        
+
         if min_distance.is_finite() {
             Some(min_distance)
         } else {
             None
         }
     }
-    
-    fn permute_and_evaluate(
-        &self,
-        arr: &mut [usize],
-        depth: usize,
-        min_distance: &mut f64,
-    ) {
+
+    fn permute_and_evaluate(&self, arr: &mut [usize], depth: usize, min_distance: &mut f64) {
         if depth == arr.len() {
             // Calculate distance for this permutation
             let mut dist = self.distance(0, arr[0]); // Start to first
@@ -164,7 +157,7 @@ impl PathProblem {
             *min_distance = (*min_distance).min(dist);
             return;
         }
-        
+
         for i in depth..arr.len() {
             arr.swap(depth, i);
             self.permute_and_evaluate(arr, depth + 1, min_distance);
@@ -179,11 +172,7 @@ mod tests {
 
     #[test]
     fn test_sort_restaurants() {
-        let restaurants = vec![
-            ("Expensive", 50.0),
-            ("Cheap", 10.0),
-            ("Medium", 25.0),
-        ];
+        let restaurants = vec![("Expensive", 50.0), ("Cheap", 10.0), ("Medium", 25.0)];
         let sorted = sort_restaurants_by_price(restaurants);
         assert_eq!(sorted[0].1, 10.0);
         assert_eq!(sorted[2].1, 50.0);
@@ -202,7 +191,7 @@ mod tests {
         list.push_front(3);
         list.push_front(2);
         list.push_front(1);
-        
+
         assert_eq!(list.get(0), Some(&1));
         assert_eq!(list.get(1), Some(&2));
         assert_eq!(list.get(2), Some(&3));
@@ -212,14 +201,13 @@ mod tests {
     fn test_path_problem() {
         let nodes = vec![(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)];
         let problem = PathProblem::new(nodes);
-        
+
         let dist = problem.shortest_path(0, 1);
         assert!((dist - 1.0).abs() < 0.001);
-        
+
         // TSP should find a tour
         let tsp_dist = problem.tsp_brute_force();
         assert!(tsp_dist.is_some());
         assert!(tsp_dist.unwrap() > 0.0);
     }
 }
-

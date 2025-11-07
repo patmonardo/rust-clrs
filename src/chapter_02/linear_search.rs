@@ -100,4 +100,3 @@ mod tests {
         assert_eq!(linear_search(&arr, &41), Some(1));
     }
 }
-

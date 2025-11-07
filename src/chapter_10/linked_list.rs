@@ -303,7 +303,7 @@ mod tests {
         list.insert(1);
         list.insert(2);
         list.insert(3);
-        
+
         assert!(list.search(3).is_some());
         assert!(list.search(2).is_some());
         assert!(list.search(1).is_some());
@@ -315,7 +315,7 @@ mod tests {
         list.insert(1);
         list.insert(2);
         list.insert(3);
-        
+
         assert!(list.delete(2));
         assert!(list.search(2).is_none());
         assert!(list.search(1).is_some());
@@ -328,7 +328,7 @@ mod tests {
         stack.push(1);
         stack.push(2);
         stack.push(3);
-        
+
         assert_eq!(stack.pop(), Some(3));
         assert_eq!(stack.pop(), Some(2));
         assert_eq!(stack.pop(), Some(1));
@@ -341,7 +341,7 @@ mod tests {
         queue.enqueue(1);
         queue.enqueue(2);
         queue.enqueue(3);
-        
+
         assert_eq!(queue.dequeue(), Some(1));
         assert_eq!(queue.dequeue(), Some(2));
         assert_eq!(queue.dequeue(), Some(3));
@@ -354,9 +354,9 @@ mod tests {
         list.insert(1);
         list.insert(2);
         list.insert(3);
-        
+
         reverse_list(&mut list);
-        
+
         // After reversal, should be able to traverse in reverse order
         // This is a simplified test - in practice you'd verify the order
         assert!(list.search(1).is_some());
@@ -364,4 +364,3 @@ mod tests {
         assert!(list.search(3).is_some());
     }
 }
-

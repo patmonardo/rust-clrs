@@ -142,7 +142,7 @@ impl<K: Ord, V> RedBlackTree<K, V> {
             // Turn y's left subtree into x's right subtree
             let y_left = y.left.take();
             node.right = y_left;
-            
+
             // Exchange the entire node contents
             // Make x y's left child, then replace node with y
             let mut x = std::mem::replace(node, y);
@@ -160,7 +160,7 @@ impl<K: Ord, V> RedBlackTree<K, V> {
             // Turn x's right subtree into y's left subtree
             let x_right = x.right.take();
             node.left = x_right;
-            
+
             // Exchange the entire node contents
             // Make y x's right child, then replace node with x
             let mut y = std::mem::replace(node, x);
@@ -265,7 +265,7 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         assert_eq!(tree.search(5), Some(&"value5"));
         assert_eq!(tree.search(3), Some(&"value3"));
         assert_eq!(tree.search(7), Some(&"value7"));
@@ -275,7 +275,7 @@ mod tests {
     fn test_rb_tree_root_is_black() {
         let mut tree = RedBlackTree::new();
         tree.insert(5, "value5");
-        
+
         // Root should be black
         assert_eq!(tree.root.as_ref().map(|n| n.color), Some(Color::Black));
     }
@@ -288,7 +288,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.minimum(), Some((&1, &"value1")));
         assert_eq!(tree.maximum(), Some((&9, &"value9")));
     }
@@ -301,7 +301,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         let mut keys = Vec::new();
         tree.inorder_walk(|k, _| keys.push(*k));
         assert_eq!(keys, vec![1, 3, 5, 7, 9]);
@@ -312,16 +312,16 @@ mod tests {
         // Example from CLRS 13.3-2: insert 41, 38, 31, 12, 19, 8
         let mut tree = RedBlackTree::new();
         let keys = vec![41, 38, 31, 12, 19, 8];
-        
+
         for key in &keys {
             tree.insert(*key, format!("value{}", key));
         }
-        
+
         // Verify all keys are present
         for key in &keys {
             assert!(tree.search(*key).is_some());
         }
-        
+
         // Verify tree is valid (root is black)
         assert_eq!(tree.root.as_ref().map(|n| n.color), Some(Color::Black));
     }

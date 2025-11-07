@@ -29,9 +29,9 @@ pub fn bottom_up_cut_rod(p: &[i32], n: usize) -> i32 {
     if n == 0 {
         return 0;
     }
-    
+
     let mut r = vec![0; n + 1];
-    
+
     for j in 1..=n {
         let mut q = i32::MIN;
         for i in 1..=j {
@@ -41,7 +41,7 @@ pub fn bottom_up_cut_rod(p: &[i32], n: usize) -> i32 {
         }
         r[j] = q;
     }
-    
+
     r[n]
 }
 
@@ -68,7 +68,7 @@ fn memoized_cut_rod_aux(p: &[i32], n: usize, r: &mut [i32]) -> i32 {
     if r[n] >= 0 {
         return r[n];
     }
-    
+
     let q = if n == 0 {
         0
     } else {
@@ -80,7 +80,7 @@ fn memoized_cut_rod_aux(p: &[i32], n: usize, r: &mut [i32]) -> i32 {
         }
         max_revenue
     };
-    
+
     r[n] = q;
     q
 }
@@ -103,7 +103,7 @@ fn memoized_cut_rod_aux(p: &[i32], n: usize, r: &mut [i32]) -> i32 {
 pub fn extended_bottom_up_cut_rod(p: &[i32], n: usize) -> (i32, Vec<usize>) {
     let mut r = vec![0; n + 1];
     let mut s = vec![0; n + 1];
-    
+
     for j in 1..=n {
         let mut q = i32::MIN;
         for i in 1..=j {
@@ -117,7 +117,7 @@ pub fn extended_bottom_up_cut_rod(p: &[i32], n: usize) -> (i32, Vec<usize>) {
         }
         r[j] = q;
     }
-    
+
     (r[n], s)
 }
 
@@ -135,12 +135,12 @@ pub fn print_cut_rod_solution(p: &[i32], n: usize) -> Vec<usize> {
     let (_, s) = extended_bottom_up_cut_rod(p, n);
     let mut solution = Vec::new();
     let mut j = n;
-    
+
     while j > 0 {
         solution.push(s[j]);
         j -= s[j];
     }
-    
+
     solution
 }
 
@@ -163,9 +163,9 @@ pub fn modified_cut_rod(p: &[i32], n: usize, c: i32) -> i32 {
     if n == 0 {
         return 0;
     }
-    
+
     let mut r = vec![0; n + 1];
-    
+
     for j in 1..=n {
         let mut q = if j < p.len() { p[j] } else { i32::MIN };
         for i in 1..j {
@@ -175,7 +175,7 @@ pub fn modified_cut_rod(p: &[i32], n: usize, c: i32) -> i32 {
         }
         r[j] = q;
     }
-    
+
     r[n]
 }
 
@@ -225,4 +225,3 @@ mod tests {
         assert!(revenue >= 0);
     }
 }
-

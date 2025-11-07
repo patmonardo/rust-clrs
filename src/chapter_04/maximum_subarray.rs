@@ -43,7 +43,7 @@ fn find_max_crossing_subarray(
     let mut left_sum = i64::MIN;
     let mut sum = 0;
     let mut max_left = mid;
-    
+
     // CLRS: for i = mid downto low
     for i in (low..=mid).rev() {
         sum += arr[i];
@@ -53,12 +53,12 @@ fn find_max_crossing_subarray(
             max_left = i;
         }
     }
-    
+
     // CLRS: right-sum = -∞
     let mut right_sum = i64::MIN;
     sum = 0;
     let mut max_right = mid;
-    
+
     // CLRS: for j = mid + 1 to high
     for j in (mid + 1)..=high {
         sum += arr[j];
@@ -68,7 +68,7 @@ fn find_max_crossing_subarray(
             max_right = j;
         }
     }
-    
+
     // CLRS: return (max-left, max-right, left-sum + right-sum)
     MaximumSubarrayResult {
         low: max_left,
@@ -100,11 +100,7 @@ fn find_max_crossing_subarray(
 /// # Complexity
 /// - Time: O(n log n)
 /// - Space: O(log n) due to recursion stack
-pub fn find_maximum_subarray(
-    arr: &[i64],
-    low: usize,
-    high: usize,
-) -> MaximumSubarrayResult {
+pub fn find_maximum_subarray(arr: &[i64], low: usize, high: usize) -> MaximumSubarrayResult {
     // CLRS: if high == low
     if high == low {
         // CLRS: return (low, high, A[low])
@@ -114,19 +110,19 @@ pub fn find_maximum_subarray(
             sum: arr[low],
         };
     }
-    
+
     // CLRS: else mid = floor((low + high) / 2)
     let mid = (low + high) / 2;
-    
+
     // CLRS: (left-low, left-high, left-sum) = FIND-MAXIMUM-SUBARRAY(A, low, mid)
     let left = find_maximum_subarray(arr, low, mid);
-    
+
     // CLRS: (right-low, right-high, right-sum) = FIND-MAXIMUM-SUBARRAY(A, mid + 1, high)
     let right = find_maximum_subarray(arr, mid + 1, high);
-    
+
     // CLRS: (cross-low, cross-high, cross-sum) = FIND-MAX-CROSSING-SUBARRAY(A, low, mid, high)
     let cross = find_max_crossing_subarray(arr, low, mid, high);
-    
+
     // CLRS: if left-sum >= right-sum and left-sum >= cross-sum
     if left.sum >= right.sum && left.sum >= cross.sum {
         left
@@ -170,13 +166,13 @@ pub fn brute_force_find_maximum_subarray(arr: &[i64]) -> MaximumSubarrayResult {
             sum: 0,
         };
     }
-    
+
     let n = arr.len();
     // CLRS: max-sum = -∞
     let mut max_sum = i64::MIN;
     let mut low = 0;
     let mut high = 0;
-    
+
     // CLRS: for l = 1 to n
     for l in 0..n {
         let mut sum = 0;
@@ -192,9 +188,13 @@ pub fn brute_force_find_maximum_subarray(arr: &[i64]) -> MaximumSubarrayResult {
             }
         }
     }
-    
+
     // CLRS: return (low, high, max-sum)
-    MaximumSubarrayResult { low, high, sum: max_sum }
+    MaximumSubarrayResult {
+        low,
+        high,
+        sum: max_sum,
+    }
 }
 
 /// Finds the maximum subarray using an iterative linear-time algorithm
@@ -226,7 +226,7 @@ pub fn iterative_find_maximum_subarray(arr: &[i64]) -> MaximumSubarrayResult {
             sum: 0,
         };
     }
-    
+
     let n = arr.len();
     // CLRS: max-sum = -∞
     let mut max_sum = i64::MIN;
@@ -235,7 +235,7 @@ pub fn iterative_find_maximum_subarray(arr: &[i64]) -> MaximumSubarrayResult {
     let mut low = 0;
     let mut high = 0;
     let mut current_low = 0;
-    
+
     // CLRS: for j = 1 to n
     for j in 0..n {
         let current_high = j;
@@ -256,9 +256,13 @@ pub fn iterative_find_maximum_subarray(arr: &[i64]) -> MaximumSubarrayResult {
             high = current_high;
         }
     }
-    
+
     // CLRS: return (low, high, max-sum)
-    MaximumSubarrayResult { low, high, sum: max_sum }
+    MaximumSubarrayResult {
+        low,
+        high,
+        sum: max_sum,
+    }
 }
 
 #[cfg(test)]
@@ -268,17 +272,33 @@ mod tests {
     #[test]
     fn test_find_maximum_subarray_example() {
         // Example from CLRS Section 4.1
-        let arr = vec![13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7];
+        let arr = vec![
+            13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7,
+        ];
         let result = find_maximum_subarray(&arr, 0, arr.len() - 1);
         // The maximum subarray is A[7..10] = [18, 20, -7, 12] with sum 43
-        assert_eq!(result, MaximumSubarrayResult { low: 7, high: 10, sum: 43 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 7,
+                high: 10,
+                sum: 43
+            }
+        );
     }
 
     #[test]
     fn test_find_maximum_subarray_single_element() {
         let arr = vec![5];
         let result = find_maximum_subarray(&arr, 0, 0);
-        assert_eq!(result, MaximumSubarrayResult { low: 0, high: 0, sum: 5 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 0,
+                high: 0,
+                sum: 5
+            }
+        );
     }
 
     #[test]
@@ -286,37 +306,71 @@ mod tests {
         // When all elements are negative, should return the least negative (largest) element
         let arr = vec![-5, -3, -8, -1];
         let result = find_maximum_subarray(&arr, 0, arr.len() - 1);
-        assert_eq!(result, MaximumSubarrayResult { low: 3, high: 3, sum: -1 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 3,
+                high: 3,
+                sum: -1
+            }
+        );
     }
 
     #[test]
     fn test_find_maximum_subarray_all_positive() {
         let arr = vec![1, 2, 3, 4, 5];
         let result = find_maximum_subarray(&arr, 0, arr.len() - 1);
-        assert_eq!(result, MaximumSubarrayResult { low: 0, high: 4, sum: 15 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 0,
+                high: 4,
+                sum: 15
+            }
+        );
     }
 
     #[test]
     fn test_brute_force_find_maximum_subarray() {
-        let arr = vec![13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7];
+        let arr = vec![
+            13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7,
+        ];
         let result = brute_force_find_maximum_subarray(&arr);
-        assert_eq!(result, MaximumSubarrayResult { low: 7, high: 10, sum: 43 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 7,
+                high: 10,
+                sum: 43
+            }
+        );
     }
 
     #[test]
     fn test_iterative_find_maximum_subarray() {
-        let arr = vec![13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7];
+        let arr = vec![
+            13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7,
+        ];
         let result = iterative_find_maximum_subarray(&arr);
-        assert_eq!(result, MaximumSubarrayResult { low: 7, high: 10, sum: 43 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 7,
+                high: 10,
+                sum: 43
+            }
+        );
     }
 
     #[test]
     fn test_all_algorithms_agree() {
-        let arr = vec![13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7];
+        let arr = vec![
+            13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7,
+        ];
         let recursive = find_maximum_subarray(&arr, 0, arr.len() - 1);
         let brute_force = brute_force_find_maximum_subarray(&arr);
         let iterative = iterative_find_maximum_subarray(&arr);
-        
+
         assert_eq!(recursive.sum, brute_force.sum);
         assert_eq!(recursive.sum, iterative.sum);
     }
@@ -332,7 +386,13 @@ mod tests {
     fn test_single_negative_element() {
         let arr = vec![-5];
         let result = find_maximum_subarray(&arr, 0, 0);
-        assert_eq!(result, MaximumSubarrayResult { low: 0, high: 0, sum: -5 });
+        assert_eq!(
+            result,
+            MaximumSubarrayResult {
+                low: 0,
+                high: 0,
+                sum: -5
+            }
+        );
     }
 }
-

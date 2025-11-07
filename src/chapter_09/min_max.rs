@@ -29,14 +29,14 @@ pub fn minimum<T: Ord>(arr: &[T]) -> (&T, usize) {
     if arr.is_empty() {
         panic!("Cannot find minimum of empty array");
     }
-    
+
     let mut min_idx = 0;
     for i in 1..arr.len() {
         if arr[i] < arr[min_idx] {
             min_idx = i;
         }
     }
-    
+
     (&arr[min_idx], min_idx)
 }
 
@@ -64,14 +64,14 @@ pub fn maximum<T: Ord>(arr: &[T]) -> (&T, usize) {
     if arr.is_empty() {
         panic!("Cannot find maximum of empty array");
     }
-    
+
     let mut max_idx = 0;
     for i in 1..arr.len() {
         if arr[i] > arr[max_idx] {
             max_idx = i;
         }
     }
-    
+
     (&arr[max_idx], max_idx)
 }
 
@@ -102,17 +102,13 @@ pub fn min_max<T: Ord>(arr: &[T]) -> ((&T, usize), (&T, usize)) {
     if arr.is_empty() {
         panic!("Cannot find min/max of empty array");
     }
-    
+
     if arr.len() == 1 {
         return ((&arr[0], 0), (&arr[0], 0));
     }
-    
-    let (mut min_idx, mut max_idx) = if arr[0] < arr[1] {
-        (0, 1)
-    } else {
-        (1, 0)
-    };
-    
+
+    let (mut min_idx, mut max_idx) = if arr[0] < arr[1] { (0, 1) } else { (1, 0) };
+
     // Process elements in pairs
     let mut i = 2;
     while i < arr.len() - 1 {
@@ -134,7 +130,7 @@ pub fn min_max<T: Ord>(arr: &[T]) -> ((&T, usize), (&T, usize)) {
         }
         i += 2;
     }
-    
+
     // Handle odd-length array
     if i < arr.len() {
         if arr[i] < arr[min_idx] {
@@ -143,7 +139,7 @@ pub fn min_max<T: Ord>(arr: &[T]) -> ((&T, usize), (&T, usize)) {
             max_idx = i;
         }
     }
-    
+
     ((&arr[min_idx], min_idx), (&arr[max_idx], max_idx))
 }
 
@@ -172,39 +168,39 @@ pub fn second_smallest<T: Ord + Clone>(arr: &[T]) -> (&T, usize) {
     if arr.len() < 2 {
         panic!("Array must have at least 2 elements");
     }
-    
+
     // Tournament method: compare elements in pairs
     // Track which elements lost to the minimum
     let mut candidates: Vec<usize> = Vec::new();
     let mut winners: Vec<usize> = (0..arr.len()).collect();
-    
+
     // Tournament rounds
     while winners.len() > 1 {
         let mut next_winners = Vec::new();
         let mut i = 0;
-        
+
         while i < winners.len() - 1 {
             if arr[winners[i]] < arr[winners[i + 1]] {
                 candidates.push(winners[i + 1]); // Loser
-                next_winners.push(winners[i]);  // Winner
+                next_winners.push(winners[i]); // Winner
             } else {
-                candidates.push(winners[i]);     // Loser
+                candidates.push(winners[i]); // Loser
                 next_winners.push(winners[i + 1]); // Winner
             }
             i += 2;
         }
-        
+
         // Handle odd element
         if i < winners.len() {
             next_winners.push(winners[i]);
         }
-        
+
         winners = next_winners;
     }
-    
+
     // The minimum is the final winner
     let _min_idx = winners[0];
-    
+
     // Find minimum among candidates (elements that lost to the minimum)
     let mut second_min_idx = candidates[0];
     for &candidate_idx in &candidates[1..] {
@@ -212,7 +208,7 @@ pub fn second_smallest<T: Ord + Clone>(arr: &[T]) -> (&T, usize) {
             second_min_idx = candidate_idx;
         }
     }
-    
+
     (&arr[second_min_idx], second_min_idx)
 }
 
@@ -267,4 +263,3 @@ mod tests {
         assert_eq!(*second_min_val, 2);
     }
 }
-

@@ -34,22 +34,22 @@ pub fn random_0_1() -> u32 {
 /// Expected time: O(⌈lg(b - a)⌉)
 pub fn random_range(a: i32, b: i32) -> i32 {
     let range = (b - a) as u32;
-    
+
     if range == 0 {
         return a;
     }
-    
+
     let bits = (range as f64).log2().ceil() as u32;
-    
+
     loop {
         let mut result = 0u32;
-        
+
         // Build a random number in [0, 2^bits) by calling RANDOM(0, 1) bits times
         for i in 0..bits {
             let bit = random_0_1();
             result |= bit << i;
         }
-        
+
         // If result is within valid range, return it
         if result <= range {
             return a + result as i32;
@@ -83,7 +83,7 @@ where
     loop {
         let x = biased_random();
         let y = biased_random();
-        
+
         // If x != y, we have either 01 or 10, both with probability p(1-p)
         // This gives us unbiased output
         if x != y {
@@ -114,7 +114,7 @@ mod tests {
             let result = random_range(5, 10);
             assert!(result >= 5 && result <= 10);
         }
-        
+
         for _ in 0..100 {
             let result = random_range(-10, -5);
             assert!(result >= -10 && result <= -5);
@@ -133,7 +133,7 @@ mod tests {
         use std::cell::Cell;
         let mut biased_rng = rand::thread_rng();
         let call_count = Cell::new(0);
-        
+
         let mut biased_random = || {
             call_count.set(call_count.get() + 1);
             if biased_rng.gen::<f64>() < 0.75 {
@@ -142,23 +142,27 @@ mod tests {
                 0
             }
         };
-        
+
         // Test that unbiased_random produces roughly equal 0s and 1s
         let mut counts = HashMap::new();
         let num_samples = 1000;
-        
+
         for _ in 0..num_samples {
             let result = unbiased_random(&mut biased_random);
             *counts.entry(result).or_insert(0) += 1;
         }
-        
+
         // Should have roughly equal distribution
         let zeros = counts.get(&0).unwrap_or(&0);
         let ones = counts.get(&1).unwrap_or(&0);
-        
+
         // With 1000 samples, we expect roughly 500 of each
         // Allow for some variance (say, within 20%)
-        assert!(*zeros > 350 && *zeros < 650, "Zeros: {}, should be ~500", zeros);
+        assert!(
+            *zeros > 350 && *zeros < 650,
+            "Zeros: {}, should be ~500",
+            zeros
+        );
         assert!(*ones > 350 && *ones < 650, "Ones: {}, should be ~500", ones);
     }
 
@@ -166,7 +170,7 @@ mod tests {
     fn test_unbiased_random_heavily_biased() {
         // Test with a very biased function (returns 1 99% of the time)
         let mut biased_rng = rand::thread_rng();
-        
+
         let mut biased_random = || {
             if biased_rng.gen::<f64>() < 0.99 {
                 1
@@ -174,21 +178,20 @@ mod tests {
                 0
             }
         };
-        
+
         let mut counts = HashMap::new();
         let num_samples = 1000;
-        
+
         for _ in 0..num_samples {
             let result = unbiased_random(&mut biased_random);
             *counts.entry(result).or_insert(0) += 1;
         }
-        
+
         // Should still produce roughly unbiased output
         let zeros = counts.get(&0).unwrap_or(&0);
         let ones = counts.get(&1).unwrap_or(&0);
-        
+
         assert!(*zeros > 350 && *zeros < 650);
         assert!(*ones > 350 && *ones < 650);
     }
 }
-

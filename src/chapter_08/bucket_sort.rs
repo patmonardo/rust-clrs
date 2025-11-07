@@ -28,14 +28,14 @@
 /// ```
 pub fn bucket_sort(arr: &[f64]) -> Vec<f64> {
     let n = arr.len();
-    
+
     if n == 0 {
         return vec![];
     }
-    
+
     // CLRS: let B[0..n-1] be a new array
     let mut b: Vec<Vec<f64>> = vec![Vec::new(); n];
-    
+
     // CLRS: for i = 0 to n - 1
     // CLRS: insert A[i] into list B[floor(n * A[i])]
     for &value in arr {
@@ -47,13 +47,13 @@ pub fn bucket_sort(arr: &[f64]) -> Vec<f64> {
         let index = index.min(n - 1);
         b[index].push(value);
     }
-    
+
     // CLRS: for i = 0 to n - 1
     // CLRS: sort list B[i] with insertion sort
     for bucket in &mut b {
         insertion_sort_bucket(bucket);
     }
-    
+
     // CLRS: concatenate the lists B[0], B[1], ..., B[n-1] together in order
     b.into_iter().flatten().collect()
 }
@@ -65,12 +65,12 @@ fn insertion_sort_bucket(arr: &mut [f64]) {
     for i in 1..arr.len() {
         let key = arr[i];
         let mut j = i;
-        
+
         while j > 0 && arr[j - 1] > key {
             arr[j] = arr[j - 1];
             j -= 1;
         }
-        
+
         arr[j] = key;
     }
 }
@@ -109,13 +109,13 @@ pub fn bucket_sort_inplace(arr: &mut [f64]) {
 /// - Space: Θ(n)
 pub fn bucket_sort_merge_sort(arr: &[f64]) -> Vec<f64> {
     let n = arr.len();
-    
+
     if n == 0 {
         return vec![];
     }
-    
+
     let mut b: Vec<Vec<f64>> = vec![Vec::new(); n];
-    
+
     for &value in arr {
         if !(0.0..1.0).contains(&value) {
             panic!("Element {} is not in range [0.0, 1.0)", value);
@@ -124,12 +124,12 @@ pub fn bucket_sort_merge_sort(arr: &[f64]) -> Vec<f64> {
         let index = index.min(n - 1);
         b[index].push(value);
     }
-    
+
     // Sort each bucket using merge sort
     for bucket in &mut b {
         merge_sort_bucket(bucket);
     }
-    
+
     b.into_iter().flatten().collect()
 }
 
@@ -138,13 +138,13 @@ fn merge_sort_bucket(arr: &mut [f64]) {
     if arr.len() <= 1 {
         return;
     }
-    
+
     let mid = arr.len() / 2;
     let (left, right) = arr.split_at_mut(mid);
-    
+
     merge_sort_bucket(left);
     merge_sort_bucket(right);
-    
+
     merge_buckets(arr, mid);
 }
 
@@ -152,11 +152,11 @@ fn merge_sort_bucket(arr: &mut [f64]) {
 fn merge_buckets(arr: &mut [f64], mid: usize) {
     let left = arr[..mid].to_vec();
     let right = arr[mid..].to_vec();
-    
+
     let mut i = 0;
     let mut j = 0;
     let mut k = 0;
-    
+
     while i < left.len() && j < right.len() {
         if left[i] <= right[j] {
             arr[k] = left[i];
@@ -167,13 +167,13 @@ fn merge_buckets(arr: &mut [f64], mid: usize) {
         }
         k += 1;
     }
-    
+
     while i < left.len() {
         arr[k] = left[i];
         i += 1;
         k += 1;
     }
-    
+
     while j < right.len() {
         arr[k] = right[j];
         j += 1;
@@ -190,7 +190,7 @@ mod tests {
         let arr = vec![0.79, 0.13, 0.16, 0.64, 0.39, 0.20, 0.89, 0.53, 0.71, 0.42];
         let sorted = bucket_sort(&arr);
         let expected = vec![0.13, 0.16, 0.20, 0.39, 0.42, 0.53, 0.64, 0.71, 0.79, 0.89];
-        
+
         // Use approximate comparison for floats
         for (a, b) in sorted.iter().zip(expected.iter()) {
             assert!((a - b).abs() < 1e-10, "Expected {}, got {}", b, a);
@@ -203,7 +203,7 @@ mod tests {
         let arr = vec![0.79, 0.13, 0.16, 0.64, 0.39, 0.20, 0.89, 0.53, 0.71, 0.42];
         let sorted = bucket_sort(&arr);
         let expected = vec![0.13, 0.16, 0.20, 0.39, 0.42, 0.53, 0.64, 0.71, 0.79, 0.89];
-        
+
         assert_eq!(sorted.len(), expected.len());
         for (a, b) in sorted.iter().zip(expected.iter()) {
             assert!((a - b).abs() < 1e-10);
@@ -222,7 +222,7 @@ mod tests {
         let arr = vec![0.1, 0.2, 0.3, 0.4, 0.5];
         let sorted = bucket_sort(&arr);
         let expected = vec![0.1, 0.2, 0.3, 0.4, 0.5];
-        
+
         for (a, b) in sorted.iter().zip(expected.iter()) {
             assert!((a - b).abs() < 1e-10);
         }
@@ -233,7 +233,7 @@ mod tests {
         let mut arr = vec![0.79, 0.13, 0.16, 0.64, 0.39, 0.20];
         bucket_sort_inplace(&mut arr);
         let expected = vec![0.13, 0.16, 0.20, 0.39, 0.64, 0.79];
-        
+
         for (a, b) in arr.iter().zip(expected.iter()) {
             assert!((a - b).abs() < 1e-10);
         }
@@ -244,7 +244,7 @@ mod tests {
         let arr = vec![0.79, 0.13, 0.16, 0.64, 0.39, 0.20, 0.89, 0.53, 0.71, 0.42];
         let sorted = bucket_sort_merge_sort(&arr);
         let expected = vec![0.13, 0.16, 0.20, 0.39, 0.42, 0.53, 0.64, 0.71, 0.79, 0.89];
-        
+
         for (a, b) in sorted.iter().zip(expected.iter()) {
             assert!((a - b).abs() < 1e-10);
         }
@@ -257,4 +257,3 @@ mod tests {
         assert!(sorted.is_empty());
     }
 }
-

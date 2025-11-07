@@ -3,7 +3,6 @@
 //! This module implements matrix multiplication algorithms including
 //! the standard divide-and-conquer approach and Strassen's algorithm.
 
-
 /// Multiplies two square matrices using standard divide-and-conquer
 ///
 /// This corresponds to SQUARE-MATRIX-MULTIPLY-RECURSIVE from CLRS Section 4.2.
@@ -35,40 +34,73 @@ pub fn square_matrix_multiply_recursive(
     size: usize,
 ) -> Vec<Vec<i64>> {
     let mut c = vec![vec![0; size]; size];
-    
+
     // Base case: 1×1 matrix
     if size == 1 {
         c[0][0] = a[row_a][col_a] * b[row_b][col_b];
         return c;
     }
-    
+
     let half = size / 2;
-    
+
     // C11 = A11 * B11 + A12 * B21
     let c11_part1 = square_matrix_multiply_recursive(a, b, row_a, col_a, row_b, col_b, half);
-    let c11_part2 = square_matrix_multiply_recursive(a, b, row_a, col_a + half, row_b + half, col_b, half);
+    let c11_part2 =
+        square_matrix_multiply_recursive(a, b, row_a, col_a + half, row_b + half, col_b, half);
     add_matrices(&c11_part1, &c11_part2, &mut c, 0, 0, half);
-    
+
     // C12 = A11 * B12 + A12 * B22
     let c12_part1 = square_matrix_multiply_recursive(a, b, row_a, col_a, row_b, col_b + half, half);
-    let c12_part2 = square_matrix_multiply_recursive(a, b, row_a, col_a + half, row_b + half, col_b + half, half);
+    let c12_part2 = square_matrix_multiply_recursive(
+        a,
+        b,
+        row_a,
+        col_a + half,
+        row_b + half,
+        col_b + half,
+        half,
+    );
     add_matrices(&c12_part1, &c12_part2, &mut c, 0, half, half);
-    
+
     // C21 = A21 * B11 + A22 * B21
     let c21_part1 = square_matrix_multiply_recursive(a, b, row_a + half, col_a, row_b, col_b, half);
-    let c21_part2 = square_matrix_multiply_recursive(a, b, row_a + half, col_a + half, row_b + half, col_b, half);
+    let c21_part2 = square_matrix_multiply_recursive(
+        a,
+        b,
+        row_a + half,
+        col_a + half,
+        row_b + half,
+        col_b,
+        half,
+    );
     add_matrices(&c21_part1, &c21_part2, &mut c, half, 0, half);
-    
+
     // C22 = A21 * B12 + A22 * B22
-    let c22_part1 = square_matrix_multiply_recursive(a, b, row_a + half, col_a, row_b, col_b + half, half);
-    let c22_part2 = square_matrix_multiply_recursive(a, b, row_a + half, col_a + half, row_b + half, col_b + half, half);
+    let c22_part1 =
+        square_matrix_multiply_recursive(a, b, row_a + half, col_a, row_b, col_b + half, half);
+    let c22_part2 = square_matrix_multiply_recursive(
+        a,
+        b,
+        row_a + half,
+        col_a + half,
+        row_b + half,
+        col_b + half,
+        half,
+    );
     add_matrices(&c22_part1, &c22_part2, &mut c, half, half, half);
-    
+
     c
 }
 
 /// Helper function to add two matrices and store result in a submatrix of C
-fn add_matrices(a: &[Vec<i64>], b: &[Vec<i64>], c: &mut [Vec<i64>], start_row: usize, start_col: usize, size: usize) {
+fn add_matrices(
+    a: &[Vec<i64>],
+    b: &[Vec<i64>],
+    c: &mut [Vec<i64>],
+    start_row: usize,
+    start_col: usize,
+    size: usize,
+) {
     for i in 0..size {
         for j in 0..size {
             c[start_row + i][start_col + j] = a[i][j] + b[i][j];
@@ -106,38 +138,38 @@ fn add_matrices(a: &[Vec<i64>], b: &[Vec<i64>], c: &mut [Vec<i64>], start_row: u
 /// - Space: O(n²)
 pub fn strassen_matrix_multiply(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>> {
     let n = a.len();
-    
+
     // Validate input
     assert_eq!(n, a[0].len(), "Matrix A must be square");
     assert_eq!(n, b.len(), "Matrices must have same size");
     assert_eq!(n, b[0].len(), "Matrix B must be square");
     assert!(n > 0, "Matrices cannot be empty");
     assert!(n.is_power_of_two(), "Matrix size must be a power of 2");
-    
+
     // Base case: 1×1 matrix
     if n == 1 {
         return vec![vec![a[0][0] * b[0][0]]];
     }
-    
+
     let half = n / 2;
-    
+
     // Divide matrices into submatrices
     // A11 = A[0..half][0..half]
     // A12 = A[0..half][half..n]
     // A21 = A[half..n][0..half]
     // A22 = A[half..n][half..n]
     // Same for B
-    
+
     let a11 = extract_submatrix(a, 0, 0, half);
     let a12 = extract_submatrix(a, 0, half, half);
     let a21 = extract_submatrix(a, half, 0, half);
     let a22 = extract_submatrix(a, half, half, half);
-    
+
     let b11 = extract_submatrix(b, 0, 0, half);
     let b12 = extract_submatrix(b, 0, half, half);
     let b21 = extract_submatrix(b, half, 0, half);
     let b22 = extract_submatrix(b, half, half, half);
-    
+
     // Compute the 10 matrices S1 through S10
     // CLRS: S1 = B12 - B22
     let s1 = subtract_matrices(&b12, &b22);
@@ -159,7 +191,7 @@ pub fn strassen_matrix_multiply(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>>
     let s9 = subtract_matrices(&a11, &a21);
     // CLRS: S10 = B11 + B12
     let s10 = add_matrices_full(&b11, &b12);
-    
+
     // Compute the 7 products P1 through P7
     // CLRS: P1 = STRASSEN(A11, S1)
     let p1 = strassen_matrix_multiply(&a11, &s1);
@@ -175,26 +207,31 @@ pub fn strassen_matrix_multiply(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>>
     let p6 = strassen_matrix_multiply(&s7, &s8);
     // CLRS: P7 = STRASSEN(S9, S10)
     let p7 = strassen_matrix_multiply(&s9, &s10);
-    
+
     // Compute the four quadrants of C
     // CLRS: C11 = P5 + P4 - P2 + P6
     let c11 = add_matrices_full(&add_matrices_full(&p5, &p4), &subtract_matrices(&p6, &p2));
-    
+
     // CLRS: C12 = P1 + P2
     let c12 = add_matrices_full(&p1, &p2);
-    
+
     // CLRS: C21 = P3 + P4
     let c21 = add_matrices_full(&p3, &p4);
-    
+
     // CLRS: C22 = P5 + P1 - P3 - P7
     let c22 = subtract_matrices(&subtract_matrices(&add_matrices_full(&p5, &p1), &p3), &p7);
-    
+
     // Combine the four quadrants
     combine_matrices(&c11, &c12, &c21, &c22, n)
 }
 
 /// Extracts a submatrix from a matrix
-fn extract_submatrix(matrix: &[Vec<i64>], start_row: usize, start_col: usize, size: usize) -> Vec<Vec<i64>> {
+fn extract_submatrix(
+    matrix: &[Vec<i64>],
+    start_row: usize,
+    start_col: usize,
+    size: usize,
+) -> Vec<Vec<i64>> {
     let mut submatrix = vec![vec![0; size]; size];
     for i in 0..size {
         for j in 0..size {
@@ -229,10 +266,16 @@ fn subtract_matrices(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>> {
 }
 
 /// Combines four submatrices into a single matrix
-fn combine_matrices(c11: &[Vec<i64>], c12: &[Vec<i64>], c21: &[Vec<i64>], c22: &[Vec<i64>], n: usize) -> Vec<Vec<i64>> {
+fn combine_matrices(
+    c11: &[Vec<i64>],
+    c12: &[Vec<i64>],
+    c21: &[Vec<i64>],
+    c22: &[Vec<i64>],
+    n: usize,
+) -> Vec<Vec<i64>> {
     let half = n / 2;
     let mut c = vec![vec![0; n]; n];
-    
+
     for i in 0..half {
         for j in 0..half {
             c[i][j] = c11[i][j];
@@ -241,7 +284,7 @@ fn combine_matrices(c11: &[Vec<i64>], c12: &[Vec<i64>], c21: &[Vec<i64>], c22: &
             c[i + half][j + half] = c22[i][j];
         }
     }
-    
+
     c
 }
 
@@ -266,11 +309,15 @@ pub fn standard_matrix_multiply(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>>
     let n = a.len();
     let m = a[0].len();
     let p = b[0].len();
-    
-    assert_eq!(m, b.len(), "Number of columns in A must equal number of rows in B");
-    
+
+    assert_eq!(
+        m,
+        b.len(),
+        "Number of columns in A must equal number of rows in B"
+    );
+
     let mut c = vec![vec![0; p]; n];
-    
+
     for i in 0..n {
         for j in 0..p {
             for k in 0..m {
@@ -278,7 +325,7 @@ pub fn standard_matrix_multiply(a: &[Vec<i64>], b: &[Vec<i64>]) -> Vec<Vec<i64>>
             }
         }
     }
-    
+
     c
 }
 
@@ -372,4 +419,3 @@ mod tests {
         assert_eq!(c, vec![vec![35]]);
     }
 }
-

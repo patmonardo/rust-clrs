@@ -31,12 +31,12 @@ pub fn matrix_chain_order(p: &[usize]) -> (Vec<Vec<usize>>, Vec<Vec<usize>>) {
     let n = p.len() - 1;
     let mut m = vec![vec![0; n + 1]; n + 1];
     let mut s = vec![vec![0; n + 1]; n + 1];
-    
+
     for l in 2..=n {
         for i in 1..=n - l + 1 {
             let j = i + l - 1;
             m[i][j] = usize::MAX;
-            
+
             for k in i..j {
                 let q = m[i][k] + m[k + 1][j] + p[i - 1] * p[k] * p[j];
                 if q < m[i][j] {
@@ -46,7 +46,7 @@ pub fn matrix_chain_order(p: &[usize]) -> (Vec<Vec<usize>>, Vec<Vec<usize>>) {
             }
         }
     }
-    
+
     (m, s)
 }
 
@@ -93,7 +93,7 @@ pub fn recursive_matrix_chain(p: &[usize], i: usize, j: usize) -> usize {
     if i == j {
         return 0;
     }
-    
+
     let mut min_cost = usize::MAX;
     for k in i..j {
         let cost = recursive_matrix_chain(p, i, k)
@@ -101,7 +101,7 @@ pub fn recursive_matrix_chain(p: &[usize], i: usize, j: usize) -> usize {
             + p[i - 1] * p[k] * p[j];
         min_cost = min_cost.min(cost);
     }
-    
+
     min_cost
 }
 
@@ -122,29 +122,23 @@ pub fn memoized_matrix_chain(p: &[usize]) -> usize {
     lookup_chain(p, &mut m, 1, n)
 }
 
-fn lookup_chain(
-    p: &[usize],
-    m: &mut [Vec<Option<usize>>],
-    i: usize,
-    j: usize,
-) -> usize {
+fn lookup_chain(p: &[usize], m: &mut [Vec<Option<usize>>], i: usize, j: usize) -> usize {
     if let Some(cost) = m[i][j] {
         return cost;
     }
-    
+
     let cost = if i == j {
         0
     } else {
         let mut min_cost = usize::MAX;
         for k in i..j {
-            let cost = lookup_chain(p, m, i, k)
-                + lookup_chain(p, m, k + 1, j)
-                + p[i - 1] * p[k] * p[j];
+            let cost =
+                lookup_chain(p, m, i, k) + lookup_chain(p, m, k + 1, j) + p[i - 1] * p[k] * p[j];
             min_cost = min_cost.min(cost);
         }
         min_cost
     };
-    
+
     m[i][j] = Some(cost);
     cost
 }
@@ -158,7 +152,7 @@ mod tests {
         // Example from CLRS: A_1 (30×35), A_2 (35×15), A_3 (15×5), A_4 (5×10)
         let dims = vec![30, 35, 15, 5, 10];
         let (m, s) = matrix_chain_order(&dims);
-        
+
         // Minimum cost for A_1...A_4 should be 9375
         // Optimal: (A_1 (A_2 A_3)) A_4, split at k=3
         assert_eq!(m[1][4], 9375);
@@ -189,4 +183,3 @@ mod tests {
         assert_eq!(cost, 9375);
     }
 }
-

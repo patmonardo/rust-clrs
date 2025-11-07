@@ -97,7 +97,7 @@ where
     F: FnMut(&T),
 {
     use std::collections::VecDeque;
-    
+
     let mut stack: VecDeque<&Box<BinaryTreeNode<T>>> = VecDeque::new();
     let mut current = tree.root.as_ref();
 
@@ -173,10 +173,10 @@ where
 {
     if let Some(n) = node {
         visitor(&n.key);
-        
+
         if let Some(left_child) = &n.left_child {
             print_lcrs_tree_aux(Some(left_child), visitor);
-            
+
             let mut sibling = left_child.right_sibling.as_ref();
             while let Some(s) = sibling {
                 print_lcrs_tree_aux(Some(s), visitor);
@@ -207,7 +207,7 @@ mod tests {
                 })),
             })),
         };
-        
+
         let mut keys = Vec::new();
         print_binary_tree(&tree, |key| keys.push(*key));
         assert_eq!(keys, vec![5, 10, 15]);
@@ -230,7 +230,7 @@ mod tests {
                 })),
             })),
         };
-        
+
         let mut keys = Vec::new();
         print_binary_tree_iterative(&tree, |key| keys.push(*key));
         // Should produce same in-order traversal: 5, 10, 15
@@ -254,7 +254,7 @@ mod tests {
                 right_sibling: None,
             })),
         };
-        
+
         let mut keys = Vec::new();
         print_lcrs_tree(&tree, |key| keys.push(*key));
         assert_eq!(keys, vec![1, 2, 3]);

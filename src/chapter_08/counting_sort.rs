@@ -29,10 +29,10 @@
 /// ```
 pub fn counting_sort(arr: &[usize], k: usize) -> Vec<usize> {
     let n = arr.len();
-    
+
     // CLRS: let C[0..k] be a new array
     let mut c = vec![0; k + 1];
-    
+
     // CLRS: for j = 1 to A.length
     // CLRS: C[A[j]] = C[A[j]] + 1
     for &value in arr {
@@ -41,17 +41,17 @@ pub fn counting_sort(arr: &[usize], k: usize) -> Vec<usize> {
         }
         c[value] += 1;
     }
-    
+
     // CLRS: for i = 1 to k
     // CLRS: C[i] = C[i] + C[i - 1]
     // C[i] now contains the number of elements <= i
     for i in 1..=k {
         c[i] += c[i - 1];
     }
-    
+
     // CLRS: let B[1..n] be a new array
     let mut b = vec![0; n];
-    
+
     // CLRS: for j = A.length downto 1
     // Process in reverse to maintain stability
     for &value in arr.iter().rev() {
@@ -60,7 +60,7 @@ pub fn counting_sort(arr: &[usize], k: usize) -> Vec<usize> {
         // CLRS: C[A[j]] = C[A[j]] - 1
         c[value] -= 1;
     }
-    
+
     b
 }
 
@@ -106,7 +106,7 @@ pub fn counting_sort_inplace(arr: &mut [usize], k: usize) {
 /// ```
 pub fn counting_sort_preprocess(arr: &[usize], k: usize) -> Vec<usize> {
     let mut c = vec![0; k + 1];
-    
+
     // Count occurrences
     for &value in arr {
         if value > k {
@@ -114,12 +114,12 @@ pub fn counting_sort_preprocess(arr: &[usize], k: usize) -> Vec<usize> {
         }
         c[value] += 1;
     }
-    
+
     // Make cumulative
     for i in 1..=k {
         c[i] += c[i - 1];
     }
-    
+
     c
 }
 
@@ -199,19 +199,18 @@ mod tests {
     fn test_counting_sort_preprocess_and_query() {
         let arr = vec![2, 5, 3, 0, 2, 3, 0, 3];
         let c = counting_sort_preprocess(&arr, 5);
-        
+
         // Query range [0..5] (all elements)
         assert_eq!(counting_sort_query(&c, 0, 5), 8);
-        
+
         // Query range [1..4]: elements with values 1, 2, 3, 4
         // Values: 2, 3, 2, 3, 3 = 5 elements (no 1 or 4, but 2 and 3)
         // Actually: 2 appears twice, 3 appears 3 times = 5 total
         // But wait, let's recalculate: arr has 2, 5, 3, 0, 2, 3, 0, 3
         // In range [1..4]: 2, 3, 2, 3, 3 = 5 elements
         assert_eq!(counting_sort_query(&c, 1, 4), 5);
-        
+
         // Query range [3..3]: elements with value 3
         assert_eq!(counting_sort_query(&c, 3, 3), 3);
     }
 }
-

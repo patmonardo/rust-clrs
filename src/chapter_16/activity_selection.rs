@@ -57,17 +57,17 @@ pub fn greedy_activity_selector(activities: &[Activity]) -> Vec<usize> {
     if activities.is_empty() {
         return Vec::new();
     }
-    
+
     let mut selected = vec![0]; // Always select the first activity
     let mut k = 0;
-    
+
     for m in 1..activities.len() {
         if activities[m].start >= activities[k].finish {
             selected.push(m);
             k = m;
         }
     }
-    
+
     selected
 }
 
@@ -89,28 +89,35 @@ pub fn dynamic_activity_selector(activities: &[Activity]) -> Vec<usize> {
     if n == 0 {
         return Vec::new();
     }
-    
+
     // Add dummy activities at the beginning and end
     // Use special values that won't conflict with real activities
-    let mut extended = vec![Activity { start: i32::MIN, finish: i32::MIN }];
+    let mut extended = vec![Activity {
+        start: i32::MIN,
+        finish: i32::MIN,
+    }];
     extended.extend_from_slice(activities);
-    extended.push(Activity { start: i32::MAX, finish: i32::MAX });
-    
+    extended.push(Activity {
+        start: i32::MAX,
+        finish: i32::MAX,
+    });
+
     let n_extended = extended.len();
     let mut c = vec![vec![0; n_extended]; n_extended];
     let mut act = vec![vec![None; n_extended]; n_extended];
-    
+
     // Fill the table
     for l in 2..=n_extended - 1 {
         for i in 0..=n_extended - l - 1 {
             let j = i + l;
             c[i][j] = 0;
-            
+
             let mut k = j - 1;
             while k > i && extended[k].finish > extended[i].finish {
-                if extended[i].finish <= extended[k].start 
-                    && extended[k].finish <= extended[j].start 
-                    && c[i][k] + c[k][j] + 1 > c[i][j] {
+                if extended[i].finish <= extended[k].start
+                    && extended[k].finish <= extended[j].start
+                    && c[i][k] + c[k][j] + 1 > c[i][j]
+                {
                     c[i][j] = c[i][k] + c[k][j] + 1;
                     act[i][j] = Some(k);
                 }
@@ -118,7 +125,7 @@ pub fn dynamic_activity_selector(activities: &[Activity]) -> Vec<usize> {
             }
         }
     }
-    
+
     // Reconstruct the solution
     let mut result = Vec::new();
     print_activities(&act, 0, n_extended - 1, &mut result);
@@ -153,24 +160,24 @@ pub fn weighted_activity_selector(activities: &[Activity], values: &[i32]) -> i3
     if n == 0 {
         return 0;
     }
-    
+
     let mut dp = vec![0; n];
     dp[0] = values[0];
-    
+
     for i in 1..n {
         // Option 1: Don't include activity i
         let without_i = dp[i - 1];
-        
+
         // Option 2: Include activity i, find last compatible activity
         let mut with_i = values[i];
         let j = find_last_compatible(activities, i);
         if j != usize::MAX {
             with_i += dp[j];
         }
-        
+
         dp[i] = without_i.max(with_i);
     }
-    
+
     dp[n - 1]
 }
 
@@ -236,4 +243,3 @@ mod tests {
         assert!(max_value > 0);
     }
 }
-

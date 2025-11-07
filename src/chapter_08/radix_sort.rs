@@ -31,11 +31,11 @@ pub fn radix_sort(arr: &[usize]) -> Vec<usize> {
     if arr.is_empty() {
         return vec![];
     }
-    
+
     // Find the maximum number to know number of digits
     let max = *arr.iter().max().unwrap();
     let mut result = arr.to_vec();
-    
+
     // Do counting sort for every digit
     // Instead of passing digit number, pass exp (10^i where i is current digit number)
     let mut exp = 1;
@@ -44,7 +44,7 @@ pub fn radix_sort(arr: &[usize]) -> Vec<usize> {
         result = radix_sort_counting_sort_by_digit(&result, exp);
         exp *= 10;
     }
-    
+
     result
 }
 
@@ -54,30 +54,30 @@ pub fn radix_sort(arr: &[usize]) -> Vec<usize> {
 fn radix_sort_counting_sort_by_digit(arr: &[usize], exp: usize) -> Vec<usize> {
     let n = arr.len();
     let k = 9; // For decimal digits, range is 0-9
-    
+
     // Count occurrences of each digit
     let mut c = vec![0; k + 1];
-    
+
     for &value in arr {
         let digit = (value / exp) % 10;
         c[digit] += 1;
     }
-    
+
     // Make cumulative
     for i in 1..=k {
         c[i] += c[i - 1];
     }
-    
+
     // Build output array
     let mut b = vec![0; n];
-    
+
     // Process in reverse to maintain stability
     for &value in arr.iter().rev() {
         let digit = (value / exp) % 10;
         b[c[digit] - 1] = value;
         c[digit] -= 1;
     }
-    
+
     b
 }
 
@@ -124,17 +124,22 @@ pub fn radix_sort_base_n(arr: &[usize]) -> Vec<usize> {
     if arr.is_empty() {
         return vec![];
     }
-    
+
     let n = arr.len();
     let max = *arr.iter().max().unwrap();
-    
+
     // Verify all elements are in range [0, n³ - 1]
     if max >= n * n * n {
-        panic!("Element {} exceeds maximum value n³ - 1 = {}", max, n * n * n - 1);
+        panic!(
+            "Element {} exceeds maximum value n³ - 1 = {}",
+            max,
+            n * n * n - 1
+        );
     }
-    
+
     // Convert to base n representation
-    let mut base_n_numbers: Vec<Vec<usize>> = arr.iter()
+    let mut base_n_numbers: Vec<Vec<usize>> = arr
+        .iter()
         .map(|&x| {
             let mut digits = Vec::new();
             let mut num = x;
@@ -146,16 +151,19 @@ pub fn radix_sort_base_n(arr: &[usize]) -> Vec<usize> {
             digits
         })
         .collect();
-    
+
     // Radix sort on base n digits
     for digit_pos in 0..3 {
         base_n_numbers = radix_sort_base_n_by_digit(&base_n_numbers, digit_pos, n);
     }
-    
+
     // Convert back from base n
-    base_n_numbers.iter()
+    base_n_numbers
+        .iter()
         .map(|digits| {
-            digits.iter().enumerate()
+            digits
+                .iter()
+                .enumerate()
                 .map(|(i, &d)| d * n.pow(i as u32))
                 .sum()
         })
@@ -170,27 +178,35 @@ fn radix_sort_base_n_by_digit(
 ) -> Vec<Vec<usize>> {
     let n = arr.len();
     let k = base - 1; // Digits in base n are 0..(n-1)
-    
+
     // Count occurrences
     let mut c = vec![0; k + 1];
     for digits in arr {
-        let digit = if digit_pos < digits.len() { digits[digit_pos] } else { 0 };
+        let digit = if digit_pos < digits.len() {
+            digits[digit_pos]
+        } else {
+            0
+        };
         c[digit] += 1;
     }
-    
+
     // Make cumulative
     for i in 1..=k {
         c[i] += c[i - 1];
     }
-    
+
     // Build output
     let mut b = vec![vec![]; n];
     for digits in arr.iter().rev() {
-        let digit = if digit_pos < digits.len() { digits[digit_pos] } else { 0 };
+        let digit = if digit_pos < digits.len() {
+            digits[digit_pos]
+        } else {
+            0
+        };
         b[c[digit] - 1] = digits.clone();
         c[digit] -= 1;
     }
-    
+
     b
 }
 
@@ -248,4 +264,3 @@ mod tests {
         assert!(sorted.is_empty());
     }
 }
-

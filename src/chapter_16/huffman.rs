@@ -3,8 +3,8 @@
 //! Huffman coding is a lossless data compression algorithm that assigns
 //! variable-length codes to characters based on their frequencies.
 
-use std::collections::BinaryHeap;
 use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 
 /// Represents a character with its frequency
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -16,7 +16,10 @@ pub struct CharFreq {
 impl CharFreq {
     /// Creates a new character-frequency pair
     pub fn new(character: char, frequency: usize) -> Self {
-        CharFreq { character, frequency }
+        CharFreq {
+            character,
+            frequency,
+        }
     }
 }
 
@@ -96,16 +99,16 @@ pub fn build_huffman_tree(char_freqs: &[CharFreq]) -> HuffmanNode {
     if char_freqs.is_empty() {
         panic!("Cannot build Huffman tree from empty frequency list");
     }
-    
+
     if char_freqs.len() == 1 {
         return HuffmanNode::Leaf {
             character: char_freqs[0].character,
             frequency: char_freqs[0].frequency,
         };
     }
-    
+
     let mut heap = BinaryHeap::new();
-    
+
     // Initialize heap with leaf nodes
     for &cf in char_freqs {
         heap.push(HuffmanNode::Leaf {
@@ -113,22 +116,22 @@ pub fn build_huffman_tree(char_freqs: &[CharFreq]) -> HuffmanNode {
             frequency: cf.frequency,
         });
     }
-    
+
     // Build the tree
     while heap.len() > 1 {
         let left = heap.pop().unwrap();
         let right = heap.pop().unwrap();
-        
+
         let freq = left.frequency() + right.frequency();
         let internal = HuffmanNode::Internal {
             frequency: freq,
             left: Box::new(left),
             right: Box::new(right),
         };
-        
+
         heap.push(internal);
     }
-    
+
     heap.pop().unwrap()
 }
 
@@ -191,7 +194,7 @@ pub fn decode(encoded: &str, tree: &HuffmanNode) -> String {
     let mut result = String::new();
     let mut current = tree;
     let mut bits = encoded.chars();
-    
+
     loop {
         match current {
             HuffmanNode::Leaf { character, .. } => {
@@ -208,7 +211,7 @@ pub fn decode(encoded: &str, tree: &HuffmanNode) -> String {
             }
         }
     }
-    
+
     result
 }
 
@@ -239,12 +242,12 @@ mod tests {
         ];
         let tree = build_huffman_tree(&freqs);
         let codes = generate_codes(&tree);
-        
+
         // All characters should have codes
         assert!(codes.contains_key(&'a'));
         assert!(codes.contains_key(&'b'));
         assert!(codes.contains_key(&'c'));
-        
+
         // More frequent characters should have shorter codes
         let a_code_len = codes.get(&'a').unwrap().len();
         let b_code_len = codes.get(&'b').unwrap().len();
@@ -262,12 +265,11 @@ mod tests {
         ];
         let tree = build_huffman_tree(&freqs);
         let codes = generate_codes(&tree);
-        
+
         let text = "abc";
         let encoded = encode(text, &codes);
         let decoded = decode(&encoded, &tree);
-        
+
         assert_eq!(decoded, text);
     }
 }
-

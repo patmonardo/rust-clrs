@@ -10,4 +10,3 @@ pub mod huffman;
 pub use activity_selection::*;
 pub use fractional_knapsack::*;
 pub use huffman::*;
-

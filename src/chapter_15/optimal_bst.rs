@@ -33,20 +33,20 @@ pub fn optimal_bst(p: &[f64], q: &[f64], n: usize) -> (Vec<Vec<f64>>, Vec<Vec<us
     let mut e = vec![vec![0.0; n + 2]; n + 2];
     let mut w = vec![vec![0.0; n + 2]; n + 2];
     let mut root = vec![vec![0; n + 1]; n + 1];
-    
+
     // Initialize base cases
     for i in 1..=n + 1 {
         e[i][i - 1] = q[i - 1];
         w[i][i - 1] = q[i - 1];
     }
-    
+
     // Compute e[i][j] and root[i][j] for all i <= j
     for l in 1..=n {
         for i in 1..=n - l + 1 {
             let j = i + l - 1;
             e[i][j] = f64::INFINITY;
             w[i][j] = w[i][j - 1] + p[j] + q[j];
-            
+
             for r in i..=j {
                 let t = e[i][r - 1] + e[r + 1][j] + w[i][j];
                 if t < e[i][j] {
@@ -56,7 +56,7 @@ pub fn optimal_bst(p: &[f64], q: &[f64], n: usize) -> (Vec<Vec<f64>>, Vec<Vec<us
             }
         }
     }
-    
+
     (e, root)
 }
 
@@ -81,10 +81,10 @@ pub fn construct_optimal_bst(
     if i > j {
         return vec![format!("d_{} is a child of k_{}", j, parent)];
     }
-    
+
     let r = root[i][j];
     let mut result = Vec::new();
-    
+
     if parent == 0 {
         result.push(format!("k_{} is the root", r));
     } else if j < parent {
@@ -92,10 +92,10 @@ pub fn construct_optimal_bst(
     } else {
         result.push(format!("k_{} is the right child of k_{}", r, parent));
     }
-    
+
     result.extend(construct_optimal_bst(root, i, r - 1, r));
     result.extend(construct_optimal_bst(root, r + 1, j, r));
-    
+
     result
 }
 
@@ -120,24 +120,24 @@ pub fn optimal_bst_knuth(p: &[f64], q: &[f64], n: usize) -> (Vec<Vec<f64>>, Vec<
     let mut e = vec![vec![0.0; n + 2]; n + 2];
     let mut w = vec![vec![0.0; n + 2]; n + 2];
     let mut root = vec![vec![0; n + 1]; n + 1];
-    
+
     // Initialize base cases
     for i in 1..=n + 1 {
         e[i][i - 1] = q[i - 1];
         w[i][i - 1] = q[i - 1];
     }
-    
+
     // Compute e[i][j] and root[i][j] using Knuth's optimization
     for l in 1..=n {
         for i in 1..=n - l + 1 {
             let j = i + l - 1;
             e[i][j] = f64::INFINITY;
             w[i][j] = w[i][j - 1] + p[j] + q[j];
-            
+
             // Use Knuth's optimization: root[i][j-1] <= root[i][j] <= root[i+1][j]
             let lower = if i < j { root[i][j - 1] } else { i };
             let upper = if i < j { root[i + 1][j] } else { j };
-            
+
             for r in lower..=upper {
                 let t = e[i][r - 1] + e[r + 1][j] + w[i][j];
                 if t < e[i][j] {
@@ -147,7 +147,7 @@ pub fn optimal_bst_knuth(p: &[f64], q: &[f64], n: usize) -> (Vec<Vec<f64>>, Vec<
             }
         }
     }
-    
+
     (e, root)
 }
 
@@ -161,7 +161,7 @@ mod tests {
         let p = vec![0.0, 0.15, 0.10, 0.05, 0.10, 0.20];
         let q = vec![0.05, 0.10, 0.05, 0.05, 0.05, 0.10];
         let (e, root) = optimal_bst(&p, &q, 5);
-        
+
         // Expected cost should be approximately 2.75
         assert!((e[1][5] - 2.75).abs() < 0.1);
         assert!(root[1][5] > 0);
@@ -173,7 +173,7 @@ mod tests {
         let q = vec![0.05, 0.10, 0.05, 0.05, 0.05, 0.10];
         let (_, root) = optimal_bst(&p, &q, 5);
         let structure = construct_optimal_bst(&root, 1, 5, 0);
-        
+
         // Should have a root
         assert!(structure.iter().any(|s| s.contains("root")));
     }
@@ -184,10 +184,9 @@ mod tests {
         let q = vec![0.05, 0.10, 0.05, 0.05, 0.05, 0.10];
         let (e1, root1) = optimal_bst(&p, &q, 5);
         let (e2, root2) = optimal_bst_knuth(&p, &q, 5);
-        
+
         // Both should give the same result
         assert!((e1[1][5] - e2[1][5]).abs() < 0.0001);
         assert_eq!(root1[1][5], root2[1][5]);
     }
 }
-

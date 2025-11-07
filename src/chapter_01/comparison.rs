@@ -24,11 +24,7 @@
 /// let result = compare_algorithms(insertion, merge, 1000.0);
 /// // Returns the range where insertion sort is faster
 /// ```
-pub fn compare_algorithms<F1, F2>(
-    time_a: F1,
-    time_b: F2,
-    max_n: f64,
-) -> Option<(f64, f64)>
+pub fn compare_algorithms<F1, F2>(time_a: F1, time_b: F2, max_n: f64) -> Option<(f64, f64)>
 where
     F1: Fn(f64) -> f64,
     F2: Fn(f64) -> f64,
@@ -36,17 +32,17 @@ where
     let mut start_n: Option<f64> = None;
     let mut end_n: Option<f64> = None;
     let mut prev_a_faster = false;
-    
+
     // Search for the crossover point
     let mut n = 1.0;
     let step = (max_n / 1000.0).max(1.0);
-    
+
     while n <= max_n {
         let time_a_val = time_a(n);
         let time_b_val = time_b(n);
-        
+
         let a_faster = time_a_val < time_b_val;
-        
+
         // Detect transition point
         if a_faster && !prev_a_faster {
             start_n = Some(n);
@@ -54,11 +50,11 @@ where
             end_n = Some(n);
             break;
         }
-        
+
         prev_a_faster = a_faster;
         n += step;
     }
-    
+
     match (start_n, end_n) {
         (Some(start), Some(end)) => Some((start, end)),
         (Some(start), None) => Some((start, max_n)),
@@ -87,29 +83,25 @@ where
 /// let result = find_crossover_point(poly, exp, 100.0);
 /// assert_eq!(result, Some(15.0)); // Approximately n = 15
 /// ```
-pub fn find_crossover_point<F1, F2>(
-    time_a: F1,
-    time_b: F2,
-    max_n: f64,
-) -> Option<f64>
+pub fn find_crossover_point<F1, F2>(time_a: F1, time_b: F2, max_n: f64) -> Option<f64>
 where
     F1: Fn(f64) -> f64,
     F2: Fn(f64) -> f64,
 {
     let mut n = 1.0;
     let step = (max_n / 10000.0).max(0.1);
-    
+
     while n <= max_n {
         let time_a_val = time_a(n);
         let time_b_val = time_b(n);
-        
+
         if time_a_val < time_b_val {
             return Some(n);
         }
-        
+
         n += step;
     }
-    
+
     None
 }
 
@@ -189,4 +181,3 @@ mod tests {
         assert!(result.is_some());
     }
 }
-

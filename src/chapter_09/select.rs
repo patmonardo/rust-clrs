@@ -19,7 +19,7 @@ fn insertion_sort_median<T: Ord + Clone>(arr: &mut [T]) -> T {
         }
         arr[j] = key;
     }
-    
+
     // Return median
     arr[arr.len() / 2].clone()
 }
@@ -29,7 +29,7 @@ fn insertion_sort_median<T: Ord + Clone>(arr: &mut [T]) -> T {
 /// This is the key subroutine of SELECT that finds a good pivot.
 fn median_of_medians<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize) -> usize {
     let n = r - p + 1;
-    
+
     // If array is small, just sort and return median index
     if n <= 5 {
         let mut group = arr[p..=r].to_vec();
@@ -43,11 +43,11 @@ fn median_of_medians<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize) -> usize
         }
         return p + n / 2;
     }
-    
+
     // Divide into groups of 5 and find median of each
     let num_groups = n.div_ceil(5);
     let mut medians = Vec::new();
-    
+
     for i in 0..num_groups {
         let start = p + i * 5;
         let end = (start + 4).min(r);
@@ -55,19 +55,19 @@ fn median_of_medians<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize) -> usize
         let median = insertion_sort_median(&mut group);
         medians.push(median);
     }
-    
+
     // Recursively find median of medians
     let medians_len = medians.len();
     let median_pos = medians_len.div_ceil(2);
     let median_of_medians_val = select_helper(&mut medians, 0, medians_len - 1, median_pos);
-    
+
     // Find index of median-of-medians in original array
     for i in p..=r {
         if arr[i] == median_of_medians_val {
             return i;
         }
     }
-    
+
     p + n / 2 // Fallback
 }
 
@@ -76,18 +76,18 @@ fn select_helper<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize, i: usize) ->
     if p == r {
         return arr[p].clone();
     }
-    
+
     // Find median-of-medians pivot
     let pivot_idx = median_of_medians(arr, p, r);
-    
+
     // Swap pivot to end
     arr.swap(pivot_idx, r);
-    
+
     // Partition around pivot
     let q = partition(arr, p, r);
-    
+
     let k = q - p + 1;
-    
+
     if i == k {
         arr[q].clone()
     } else if i < k {
@@ -199,13 +199,13 @@ pub fn quicksort_with_median_pivot<T: Ord + Clone>(arr: &mut [T], p: usize, r: u
         let n = r - p + 1;
         let median_pos = n.div_ceil(2);
         let _median_val = select(arr, p, r, median_pos);
-        
+
         // The median is now at position p + median_pos - 1
         let pivot_idx = p + median_pos - 1;
         arr.swap(pivot_idx, r);
-        
+
         let q = partition(arr, p, r);
-        
+
         if q > 0 {
             quicksort_with_median_pivot(arr, p, q - 1);
         }
@@ -260,4 +260,3 @@ mod tests {
         assert_eq!(arr, vec![1, 1, 2, 3, 4, 5, 6, 9]);
     }
 }
-

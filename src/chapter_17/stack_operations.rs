@@ -27,7 +27,7 @@ impl<T> AmortizedStack<T> {
             total_cost: 0,
         }
     }
-    
+
     /// Pushes an element onto the stack
     ///
     /// Actual cost: O(1)
@@ -40,7 +40,7 @@ impl<T> AmortizedStack<T> {
         self.operation_count += 1;
         self.total_cost += 1; // Actual cost: 1
     }
-    
+
     /// Pops an element from the stack
     ///
     /// Actual cost: O(1)
@@ -53,7 +53,7 @@ impl<T> AmortizedStack<T> {
         self.total_cost += 1; // Actual cost: 1
         self.data.pop_back()
     }
-    
+
     /// Performs MULTIPOP operation: pops k elements
     ///
     /// Actual cost: O(min(k, s)) where s is stack size
@@ -67,39 +67,39 @@ impl<T> AmortizedStack<T> {
     pub fn multipop(&mut self, k: usize) -> Vec<T> {
         let mut result = Vec::new();
         let actual_cost = k.min(self.data.len());
-        
+
         for _ in 0..actual_cost {
             if let Some(item) = self.data.pop_back() {
                 result.push(item);
             }
         }
-        
+
         self.operation_count += 1;
         self.total_cost += actual_cost;
-        
+
         result
     }
-    
+
     /// Returns the number of elements in the stack
     pub fn len(&self) -> usize {
         self.data.len()
     }
-    
+
     /// Returns true if the stack is empty
     pub fn is_empty(&self) -> bool {
         self.data.is_empty()
     }
-    
+
     /// Returns the total number of operations performed
     pub fn operation_count(&self) -> usize {
         self.operation_count
     }
-    
+
     /// Returns the total actual cost of all operations
     pub fn total_cost(&self) -> usize {
         self.total_cost
     }
-    
+
     /// Returns the amortized cost per operation
     ///
     /// For stack operations, this should be O(1)
@@ -123,15 +123,15 @@ impl<T> Default for AmortizedStack<T> {
 /// Shows that n PUSH, POP, and MULTIPOP operations take O(n) time total.
 pub fn demonstrate_aggregate_analysis() {
     let mut stack: AmortizedStack<i32> = AmortizedStack::new();
-    
+
     // Perform a sequence of operations
     for i in 0..10 {
         stack.push(i);
     }
-    
+
     // MULTIPOP can be expensive, but amortized cost is O(1) per element
     let _popped = stack.multipop(5);
-    
+
     // Aggregate analysis: total cost should be O(n) where n is number of operations
     assert!(stack.total_cost() <= 2 * stack.operation_count());
 }
@@ -143,11 +143,11 @@ mod tests {
     #[test]
     fn test_stack_push_pop() {
         let mut stack = AmortizedStack::new();
-        
+
         stack.push(1);
         stack.push(2);
         stack.push(3);
-        
+
         assert_eq!(stack.len(), 3);
         assert_eq!(stack.pop(), Some(3));
         assert_eq!(stack.pop(), Some(2));
@@ -157,15 +157,15 @@ mod tests {
     #[test]
     fn test_stack_multipop() {
         let mut stack = AmortizedStack::new();
-        
+
         for i in 0..10 {
             stack.push(i);
         }
-        
+
         let popped = stack.multipop(5);
         assert_eq!(popped.len(), 5);
         assert_eq!(stack.len(), 5);
-        
+
         let popped2 = stack.multipop(10); // Only 5 left
         assert_eq!(popped2.len(), 5);
         assert!(stack.is_empty());
@@ -174,20 +174,19 @@ mod tests {
     #[test]
     fn test_amortized_cost() {
         let mut stack = AmortizedStack::new();
-        
+
         // Perform many operations
         for i in 0..100 {
             stack.push(i);
         }
-        
+
         // MULTIPOP operations
         for _ in 0..10 {
             stack.multipop(5);
         }
-        
+
         // Amortized cost per operation should be O(1)
         let amortized = stack.amortized_cost_per_operation();
         assert!(amortized <= 2.0); // Should be close to 1
     }
 }
-

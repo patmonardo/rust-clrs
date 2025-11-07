@@ -27,7 +27,7 @@ use super::heap::{build_max_heap, max_heapify};
 /// ```
 pub fn heapsort<T: Ord>(arr: &mut [T]) {
     let heap_size = arr.len();
-    
+
     if heap_size <= 1 {
         return;
     }
@@ -40,7 +40,7 @@ pub fn heapsort<T: Ord>(arr: &mut [T]) {
     for i in (1..heap_size).rev() {
         // CLRS: exchange A[1] with A[i]
         arr.swap(0, i);
-        
+
         // CLRS: A.heap-size = A.heap-size - 1
         // CLRS: MAX-HEAPIFY(A, 1)
         max_heapify(arr, i, 0);
@@ -101,4 +101,3 @@ mod tests {
         assert_eq!(arr, vec![1, 1, 2, 3, 4, 5, 5, 6, 9]);
     }
 }
-

@@ -199,10 +199,10 @@ mod tests {
     #[test]
     fn test_direct_address_basic() {
         let mut table = DirectAddressTable::new(10);
-        
+
         table.insert(5, "value5").unwrap();
         table.insert(3, "value3").unwrap();
-        
+
         assert_eq!(table.search(5), Some(&"value5"));
         assert_eq!(table.search(3), Some(&"value3"));
         assert_eq!(table.search(7), None);
@@ -211,7 +211,7 @@ mod tests {
     #[test]
     fn test_direct_address_delete() {
         let mut table = DirectAddressTable::new(10);
-        
+
         table.insert(5, "value5").unwrap();
         assert_eq!(table.delete(5), Some("value5"));
         assert_eq!(table.search(5), None);
@@ -220,32 +220,31 @@ mod tests {
     #[test]
     fn test_direct_address_maximum() {
         let mut table = DirectAddressTable::new(10);
-        
+
         assert_eq!(table.maximum(), None);
-        
+
         table.insert(5, "value5").unwrap();
         table.insert(3, "value3").unwrap();
         table.insert(8, "value8").unwrap();
-        
+
         assert_eq!(table.maximum(), Some(8));
     }
 
     #[test]
     fn test_bit_vector() {
         let mut bv = BitVector::new(100);
-        
+
         assert!(!bv.search(42));
         bv.insert(42).unwrap();
         assert!(bv.search(42));
-        
+
         bv.insert(10).unwrap();
         bv.insert(99).unwrap();
-        
+
         assert!(bv.search(10));
         assert!(bv.search(99));
-        
+
         bv.delete(42).unwrap();
         assert!(!bv.search(42));
     }
 }
-

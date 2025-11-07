@@ -19,7 +19,7 @@ impl Item {
     pub fn new(weight: f64, value: f64) -> Self {
         Item { weight, value }
     }
-    
+
     /// Returns the value per unit weight (density)
     pub fn density(&self) -> f64 {
         if self.weight == 0.0 {
@@ -62,28 +62,26 @@ impl Item {
 pub fn fractional_knapsack(items: &[Item], capacity: f64) -> (f64, Vec<f64>) {
     let n = items.len();
     let mut indices: Vec<usize> = (0..n).collect();
-    
+
     // Sort by value/weight ratio in decreasing order
-    indices.sort_by(|&i, &j| {
-        items[j].density().partial_cmp(&items[i].density()).unwrap()
-    });
-    
+    indices.sort_by(|&i, &j| items[j].density().partial_cmp(&items[i].density()).unwrap());
+
     let mut remaining = capacity;
     let mut total_value = 0.0;
     let mut fractions = vec![0.0; n];
-    
+
     for &idx in &indices {
         if remaining <= 0.0 {
             break;
         }
-        
+
         let item = items[idx];
         let fraction = (remaining / item.weight).min(1.0);
         fractions[idx] = fraction;
         total_value += item.value * fraction;
         remaining -= item.weight * fraction;
     }
-    
+
     (total_value, fractions)
 }
 
@@ -106,10 +104,10 @@ pub fn fractional_knapsack(items: &[Item], capacity: f64) -> (f64, Vec<f64>) {
 pub fn knapsack_01(items: &[Item], capacity: usize) -> (f64, Vec<bool>) {
     let n = items.len();
     let w = capacity;
-    
+
     // K[i][j] = maximum value using first i items with capacity j
     let mut k = vec![vec![0.0; w + 1]; n + 1];
-    
+
     for i in 1..=n {
         for j in 0..=w {
             let weight = items[i - 1].weight as usize;
@@ -122,7 +120,7 @@ pub fn knapsack_01(items: &[Item], capacity: usize) -> (f64, Vec<bool>) {
             }
         }
     }
-    
+
     // Reconstruct the solution
     let mut selected = vec![false; n];
     let mut j = w;
@@ -133,7 +131,7 @@ pub fn knapsack_01(items: &[Item], capacity: usize) -> (f64, Vec<bool>) {
             j -= weight;
         }
     }
-    
+
     (k[n][w], selected)
 }
 
@@ -149,13 +147,13 @@ mod tests {
             Item::new(30.0, 120.0),
         ];
         let (value, fractions) = fractional_knapsack(&items, 50.0);
-        
+
         // Should take all of item 0 (10), all of item 1 (20), and 2/3 of item 2 (20)
         // Total value: 60 + 100 + 120 * (2/3) = 60 + 100 + 80 = 240
         assert!((value - 240.0).abs() < 0.01);
         assert_eq!(fractions[0], 1.0);
         assert_eq!(fractions[1], 1.0);
-        assert!((fractions[2] - 2.0/3.0).abs() < 0.01);
+        assert!((fractions[2] - 2.0 / 3.0).abs() < 0.01);
     }
 
     #[test]
@@ -174,11 +172,10 @@ mod tests {
             Item::new(30.0, 120.0),
         ];
         let (value, _selected) = knapsack_01(&items, 50);
-        
+
         // Should select items 0 and 1 (total weight 30, value 160)
         // or items 1 and 2 (total weight 50, value 220)
         assert!(value >= 160.0);
         assert!(value <= 220.0);
     }
 }
-

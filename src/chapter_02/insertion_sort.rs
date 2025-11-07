@@ -26,19 +26,19 @@ pub fn insertion_sort<T: Ord + Clone>(arr: &mut [T]) {
     // CLRS uses 1-based indexing: for j = 2 to A.length
     // Rust uses 0-based, so we iterate from index 1 to length-1
     let n = arr.len();
-    
+
     if n <= 1 {
         return;
     }
-    
+
     // j corresponds to CLRS j (1-based), so j = 2..=n becomes 1..n in 0-based
     for j in 1..n {
         // key = A[j] in CLRS (1-based index j)
         let key = arr[j].clone();
-        
+
         // i = j - 1 in CLRS (1-based)
         let mut i = j;
-        
+
         // while i > 0 and A[i] > key
         // In CLRS: while i > 0 (1-based), which means while i >= 1 (0-based: i > 0)
         while i > 0 && arr[i - 1] > key {
@@ -47,7 +47,7 @@ pub fn insertion_sort<T: Ord + Clone>(arr: &mut [T]) {
             arr[i] = arr[i - 1].clone();
             i -= 1;
         }
-        
+
         // A[i + 1] = key in CLRS (1-based)
         // In 0-based: arr[i] = key
         arr[i] = key;
@@ -71,21 +71,21 @@ pub fn insertion_sort<T: Ord + Clone>(arr: &mut [T]) {
 /// ```
 pub fn insertion_sort_decreasing<T: Ord + Clone>(arr: &mut [T]) {
     let n = arr.len();
-    
+
     if n <= 1 {
         return;
     }
-    
+
     for j in 1..n {
         let key = arr[j].clone();
         let mut i = j;
-        
+
         // Changed from > to < for nonincreasing order
         while i > 0 && arr[i - 1] < key {
             arr[i] = arr[i - 1].clone();
             i -= 1;
         }
-        
+
         arr[i] = key;
     }
 }
@@ -136,4 +136,3 @@ mod tests {
         assert_eq!(arr, vec![59, 58, 41, 41, 31, 26]);
     }
 }
-

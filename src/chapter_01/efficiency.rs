@@ -45,7 +45,7 @@ where
     let start = Instant::now();
     let result = f();
     let elapsed = start.elapsed();
-    
+
     (
         PerformanceMetrics {
             time_ns: elapsed.as_nanos() as u64,
@@ -70,7 +70,7 @@ where
     let start = Instant::now();
     let (result, ops) = f();
     let elapsed = start.elapsed();
-    
+
     (
         PerformanceMetrics {
             time_ns: elapsed.as_nanos() as u64,
@@ -109,9 +109,9 @@ pub fn compare_performance(a: &PerformanceMetrics, b: &PerformanceMetrics) -> Ef
 
 /// Determines if algorithm A is more efficient than B
 pub fn is_more_efficient(comparison: &EfficiencyComparison, threshold: f64) -> bool {
-    comparison.time_ratio < threshold &&
-    comparison.memory_ratio.is_none_or(|r| r < threshold) &&
-    comparison.operations_ratio.is_none_or(|r| r < threshold)
+    comparison.time_ratio < threshold
+        && comparison.memory_ratio.is_none_or(|r| r < threshold)
+        && comparison.operations_ratio.is_none_or(|r| r < threshold)
 }
 
 #[cfg(test)]
@@ -137,17 +137,16 @@ mod tests {
             memory_bytes: Some(1000),
             operations: Some(50),
         };
-        
+
         let b = PerformanceMetrics {
             time_ns: 200,
             memory_bytes: Some(2000),
             operations: Some(100),
         };
-        
+
         let comparison = compare_performance(&a, &b);
         assert!(comparison.time_ratio < 1.0); // A is faster
         assert!(comparison.memory_ratio.unwrap() < 1.0); // A uses less memory
         assert!(is_more_efficient(&comparison, 1.0));
     }
 }
-

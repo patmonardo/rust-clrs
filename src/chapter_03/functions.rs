@@ -4,8 +4,8 @@
 //! implement AsymptoticFunction, demonstrating Rust's trait system for
 //! mathematical abstractions.
 
-use std::fmt;
 use super::asymptotic::AsymptoticFunction;
+use std::fmt;
 
 /// Polynomial function: n^k
 #[derive(Debug, Clone, Copy)]
@@ -23,7 +23,7 @@ impl AsymptoticFunction for Polynomial {
     fn evaluate(&self, n: f64) -> f64 {
         n.powf(self.degree)
     }
-    
+
     fn name(&self) -> String {
         if self.degree == 0.0 {
             "1".to_string()
@@ -55,13 +55,15 @@ impl Logarithm {
     pub fn new(base: f64) -> Self {
         Logarithm { base }
     }
-    
+
     pub fn base_2() -> Self {
         Logarithm { base: 2.0 }
     }
-    
+
     pub fn base_e() -> Self {
-        Logarithm { base: std::f64::consts::E }
+        Logarithm {
+            base: std::f64::consts::E,
+        }
     }
 }
 
@@ -69,7 +71,7 @@ impl AsymptoticFunction for Logarithm {
     fn evaluate(&self, n: f64) -> f64 {
         n.ln() / self.base.ln()
     }
-    
+
     fn name(&self) -> String {
         if self.base == 2.0 {
             "lg n".to_string()
@@ -97,7 +99,7 @@ impl Exponential {
     pub fn new(base: f64) -> Self {
         Exponential { base }
     }
-    
+
     pub fn base_2() -> Self {
         Exponential { base: 2.0 }
     }
@@ -107,7 +109,7 @@ impl AsymptoticFunction for Exponential {
     fn evaluate(&self, n: f64) -> f64 {
         self.base.powf(n)
     }
-    
+
     fn name(&self) -> String {
         if self.base == 2.0 {
             "2^n".to_string()
@@ -138,7 +140,7 @@ impl AsymptoticFunction for Factorial {
             let n = n;
             let pi = std::f64::consts::PI;
             let e = std::f64::consts::E;
-            
+
             if n > 20.0 {
                 // Stirling's approximation
                 (2.0 * pi * n).sqrt() * (n / e).powf(n)
@@ -152,7 +154,7 @@ impl AsymptoticFunction for Factorial {
             }
         }
     }
-    
+
     fn name(&self) -> String {
         "n!".to_string()
     }
@@ -165,7 +167,7 @@ impl fmt::Display for Factorial {
 }
 
 /// Sum of two functions: f(n) + g(n)
-/// 
+///
 /// Note: Using concrete types for better performance.
 /// For dynamic dispatch, wrap functions in FunctionWrapper.
 #[derive(Debug, Clone)]
@@ -184,7 +186,7 @@ impl AsymptoticFunction for Sum {
     fn evaluate(&self, n: f64) -> f64 {
         self.f.evaluate(n) + self.g.evaluate(n)
     }
-    
+
     fn name(&self) -> String {
         format!("({} + {})", self.f.name(), self.g.name())
     }
@@ -213,7 +215,7 @@ impl AsymptoticFunction for Product {
     fn evaluate(&self, n: f64) -> f64 {
         self.f.evaluate(n) * self.g.evaluate(n)
     }
-    
+
     fn name(&self) -> String {
         format!("({} · {})", self.f.name(), self.g.name())
     }
@@ -243,7 +245,7 @@ impl AsymptoticFunction for Composition {
         let inner_val = self.inner.evaluate(n);
         self.outer.evaluate(inner_val)
     }
-    
+
     fn name(&self) -> String {
         format!("{}({})", self.outer.name(), self.inner.name())
     }
@@ -271,7 +273,7 @@ impl AsymptoticFunction for Constant {
     fn evaluate(&self, _n: f64) -> f64 {
         self.value
     }
-    
+
     fn name(&self) -> String {
         format!("{}", self.value)
     }
@@ -300,9 +302,13 @@ impl AsymptoticFunction for Max {
     fn evaluate(&self, n: f64) -> f64 {
         let f_val: f64 = self.f.evaluate(n);
         let g_val: f64 = self.g.evaluate(n);
-        if f_val > g_val { f_val } else { g_val }
+        if f_val > g_val {
+            f_val
+        } else {
+            g_val
+        }
     }
-    
+
     fn name(&self) -> String {
         format!("max({}, {})", self.f.name(), self.g.name())
     }
@@ -335,7 +341,7 @@ impl AsymptoticFunction for FunctionWrapper {
             FunctionWrapper::Constant(c) => c.evaluate(n),
         }
     }
-    
+
     fn name(&self) -> String {
         match self {
             FunctionWrapper::Polynomial(p) => p.name(),
@@ -362,52 +368,45 @@ impl fmt::Display for FunctionWrapper {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_polynomial() {
         let n_squared = Polynomial::new(2.0);
         assert_eq!(n_squared.evaluate(5.0), 25.0);
         assert_eq!(n_squared.name(), "n²");
     }
-    
+
     #[test]
     fn test_logarithm() {
         let lg = Logarithm::base_2();
         assert!((lg.evaluate(8.0) - 3.0).abs() < 0.001);
     }
-    
+
     #[test]
     fn test_exponential() {
         let exp = Exponential::base_2();
         assert_eq!(exp.evaluate(3.0), 8.0);
     }
-    
+
     #[test]
     fn test_factorial() {
         let fact = Factorial;
         assert_eq!(fact.evaluate(5.0), 120.0);
     }
-    
+
     #[test]
     fn test_sum() {
         let n_squared = FunctionWrapper::Polynomial(Polynomial::new(2.0));
         let n = FunctionWrapper::Polynomial(Polynomial::new(1.0));
-        let sum = Sum::new(
-            Box::new(n_squared),
-            Box::new(n),
-        );
+        let sum = Sum::new(Box::new(n_squared), Box::new(n));
         assert_eq!(sum.evaluate(5.0), 30.0);
     }
-    
+
     #[test]
     fn test_product() {
         let n = FunctionWrapper::Polynomial(Polynomial::new(1.0));
         let lg = FunctionWrapper::Logarithm(Logarithm::base_2());
-        let prod = Product::new(
-            Box::new(n),
-            Box::new(lg),
-        );
+        let prod = Product::new(Box::new(n), Box::new(lg));
         assert!((prod.evaluate(8.0) - 24.0).abs() < 0.001);
     }
 }
-

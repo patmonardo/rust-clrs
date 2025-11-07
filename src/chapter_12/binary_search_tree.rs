@@ -153,7 +153,11 @@ impl<K: Ord, V> BinarySearchTree<K, V> {
         }
     }
 
-    fn find_node<'a>(&'a self, node: &'a Option<Box<BSTNode<K, V>>>, k: &K) -> Option<&'a BSTNode<K, V>> {
+    fn find_node<'a>(
+        &'a self,
+        node: &'a Option<Box<BSTNode<K, V>>>,
+        k: &K,
+    ) -> Option<&'a BSTNode<K, V>> {
         match node {
             None => None,
             Some(n) => match k.cmp(&n.key) {
@@ -247,7 +251,7 @@ impl<K: Ord, V> BinarySearchTree<K, V> {
             left: None,
             right: None,
         });
-        
+
         if self.root.is_none() {
             self.root = Some(new_node);
         } else {
@@ -305,7 +309,7 @@ impl<K: Ord, V> BinarySearchTree<K, V> {
                     Ordering::Equal => {
                         // Found the node to delete
                         let value = n.value;
-                        
+
                         match (n.left.take(), n.right.take()) {
                             (None, None) => {
                                 // No children
@@ -331,7 +335,7 @@ impl<K: Ord, V> BinarySearchTree<K, V> {
                                 }));
                             }
                         }
-                        
+
                         Some(value)
                     }
                 }
@@ -457,7 +461,7 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         assert_eq!(tree.search(5), Some(&"value5"));
         assert_eq!(tree.search(3), Some(&"value3"));
         assert_eq!(tree.search(7), Some(&"value7"));
@@ -472,7 +476,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.minimum(), Some((&1, &"value1")));
         assert_eq!(tree.maximum(), Some((&9, &"value9")));
     }
@@ -485,7 +489,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.successor(&5), Some((&7, &"value7")));
         assert_eq!(tree.successor(&3), Some((&5, &"value5")));
         assert_eq!(tree.successor(&7), Some((&9, &"value9")));
@@ -500,7 +504,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.predecessor(&5), Some((&3, &"value3")));
         assert_eq!(tree.predecessor(&3), Some((&1, &"value1")));
         assert_eq!(tree.predecessor(&7), Some((&5, &"value5")));
@@ -512,7 +516,7 @@ mod tests {
         let mut tree = BinarySearchTree::new();
         tree.insert(5, "value5");
         tree.insert(3, "value3");
-        
+
         assert_eq!(tree.delete(&3), Some("value3"));
         assert_eq!(tree.search(3), None);
         assert_eq!(tree.search(5), Some(&"value5"));
@@ -524,7 +528,7 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(1, "value1");
-        
+
         assert_eq!(tree.delete(&3), Some("value3"));
         assert_eq!(tree.search(3), None);
         assert_eq!(tree.search(1), Some(&"value1"));
@@ -539,7 +543,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(4, "value4");
-        
+
         assert_eq!(tree.delete(&3), Some("value3"));
         assert_eq!(tree.search(3), None);
         assert_eq!(tree.search(1), Some(&"value1"));
@@ -555,7 +559,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         let mut keys = Vec::new();
         tree.inorder_walk(|k, _| keys.push(*k));
         assert_eq!(keys, vec![1, 3, 5, 7, 9]);
@@ -567,7 +571,7 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         let mut keys = Vec::new();
         tree.preorder_walk(|k, _| keys.push(*k));
         assert_eq!(keys, vec![5, 3, 7]);
@@ -579,10 +583,9 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         let mut keys = Vec::new();
         tree.postorder_walk(|k, _| keys.push(*k));
         assert_eq!(keys, vec![3, 7, 5]);
     }
 }
-

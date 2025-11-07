@@ -148,7 +148,7 @@ mod tests {
         let mut arr = vec![2, 8, 7, 1, 3, 5, 6, 4];
         let q = partition(&mut arr, 0, 7);
         assert_eq!(q, 3); // Pivot 4 should be at index 3
-        // Verify partition property
+                          // Verify partition property
         for i in 0..q {
             assert!(arr[i] <= arr[q]);
         }
@@ -217,4 +217,3 @@ mod tests {
         assert_eq!(q, 0); // Pivot 1 should be at the beginning
     }
 }
-

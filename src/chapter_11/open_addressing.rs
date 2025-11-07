@@ -90,13 +90,10 @@ impl<K: PartialEq + Clone + Hash, V> OpenAddressingHashTable<K, V> {
         let h1 = (self.hash_fn1)(k_hash, self.size);
         match self.probe_type {
             ProbeType::Linear => (h1 + i) % self.size,
-            ProbeType::Quadratic { c1, c2 } => {
-                (h1 + c1 * i + c2 * i * i) % self.size
-            }
+            ProbeType::Quadratic { c1, c2 } => (h1 + c1 * i + c2 * i * i) % self.size,
             ProbeType::DoubleHashing => {
-                let h2 = self.hash_fn2
-                    .expect("Double hashing requires hash_fn2")
-                    (k_hash, self.size);
+                let h2 =
+                    self.hash_fn2.expect("Double hashing requires hash_fn2")(k_hash, self.size);
                 (h1 + i * h2) % self.size
             }
         }
@@ -211,7 +208,9 @@ impl<K: PartialEq + Clone + Hash, V> OpenAddressingHashTable<K, V> {
                 }
                 Slot::Occupied(key, _) => {
                     if key == k {
-                        if let Slot::Occupied(_, value) = std::mem::replace(&mut self.arr[j], Slot::Deleted) {
+                        if let Slot::Occupied(_, value) =
+                            std::mem::replace(&mut self.arr[j], Slot::Deleted)
+                        {
                             return Some(value);
                         }
                     }
@@ -242,16 +241,12 @@ mod tests {
 
     #[test]
     fn test_open_addressing_linear() {
-        let mut table = OpenAddressingHashTable::new(
-            11,
-            ProbeType::Linear,
-            linear_probe_hash_fn,
-            None,
-        );
-        
+        let mut table =
+            OpenAddressingHashTable::new(11, ProbeType::Linear, linear_probe_hash_fn, None);
+
         table.insert(10, "value10").unwrap();
         table.insert(22, "value22").unwrap();
-        
+
         assert_eq!(table.search(&10), Some(&"value10"));
         assert_eq!(table.search(&22), Some(&"value22"));
     }
@@ -264,11 +259,11 @@ mod tests {
             linear_probe_hash_fn,
             None,
         );
-        
+
         table.insert(10, "value10").unwrap();
         table.insert(22, "value22").unwrap();
         table.insert(31, "value31").unwrap();
-        
+
         assert_eq!(table.search(&10), Some(&"value10"));
         assert_eq!(table.search(&22), Some(&"value22"));
     }
@@ -281,28 +276,24 @@ mod tests {
             linear_probe_hash_fn,
             Some(double_hash_h2),
         );
-        
+
         table.insert(10, "value10").unwrap();
         table.insert(22, "value22").unwrap();
         table.insert(31, "value31").unwrap();
-        
+
         assert_eq!(table.search(&10), Some(&"value10"));
         assert_eq!(table.search(&22), Some(&"value22"));
     }
 
     #[test]
     fn test_open_addressing_delete() {
-        let mut table = OpenAddressingHashTable::new(
-            11,
-            ProbeType::Linear,
-            linear_probe_hash_fn,
-            None,
-        );
-        
+        let mut table =
+            OpenAddressingHashTable::new(11, ProbeType::Linear, linear_probe_hash_fn, None);
+
         table.insert(10, "value10").unwrap();
         assert_eq!(table.delete(&10), Some("value10"));
         assert_eq!(table.search(&10), None);
-        
+
         // Should be able to insert again after delete
         table.insert(10, "value10_new").unwrap();
         assert_eq!(table.search(&10), Some(&"value10_new"));
@@ -317,16 +308,15 @@ mod tests {
             |k, _| k, // h'(k) = k
             None,
         );
-        
+
         let keys = vec![10, 22, 31, 4, 15, 28, 17, 88, 59];
         for key in &keys {
             table.insert(*key, format!("value{}", key)).unwrap();
         }
-        
+
         // Verify all keys are present
         for key in &keys {
             assert!(table.search(key).is_some());
         }
     }
 }
-

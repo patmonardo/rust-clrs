@@ -34,7 +34,7 @@ pub fn lcs_length<T: Eq>(x: &[T], y: &[T]) -> (Vec<Vec<usize>>, Vec<Vec<char>>) 
     let n = y.len();
     let mut c = vec![vec![0; n + 1]; m + 1];
     let mut b = vec![vec![' '; n + 1]; m + 1];
-    
+
     for i in 1..=m {
         for j in 1..=n {
             if x[i - 1] == y[j - 1] {
@@ -49,7 +49,7 @@ pub fn lcs_length<T: Eq>(x: &[T], y: &[T]) -> (Vec<Vec<usize>>, Vec<Vec<char>>) 
             }
         }
     }
-    
+
     (c, b)
 }
 
@@ -69,7 +69,7 @@ pub fn print_lcs<T: Clone>(b: &[Vec<char>], x: &[T], i: usize, j: usize) -> Vec<
     if i == 0 || j == 0 {
         return Vec::new();
     }
-    
+
     match b[i][j] {
         '↖' => {
             let mut lcs = print_lcs(b, x, i - 1, j - 1);
@@ -105,7 +105,7 @@ pub fn print_lcs_without_b<T: Clone + Eq>(
     if c[i][j] == 0 {
         return Vec::new();
     }
-    
+
     if i > 0 && j > 0 && x[i - 1] == y[j - 1] {
         let mut lcs = print_lcs_without_b(c, x, y, i - 1, j - 1);
         lcs.push(x[i - 1].clone());
@@ -149,16 +149,15 @@ fn memoized_lcs_length_aux<T: Eq>(
     if c[i][j] != usize::MAX {
         return c[i][j];
     }
-    
+
     let result = if i == 0 || j == 0 {
         0
     } else if x[i - 1] == y[j - 1] {
         memoized_lcs_length_aux(x, y, i - 1, j - 1, c) + 1
     } else {
-        memoized_lcs_length_aux(x, y, i - 1, j, c)
-            .max(memoized_lcs_length_aux(x, y, i, j - 1, c))
+        memoized_lcs_length_aux(x, y, i - 1, j, c).max(memoized_lcs_length_aux(x, y, i, j - 1, c))
     };
-    
+
     c[i][j] = result;
     result
 }
@@ -178,19 +177,15 @@ fn memoized_lcs_length_aux<T: Eq>(
 /// - Time: O(mn)
 /// - Space: O(min(m, n))
 pub fn lcs_length_space_optimized<T: Eq>(x: &[T], y: &[T]) -> usize {
-    let (shorter, longer) = if x.len() <= y.len() {
-        (x, y)
-    } else {
-        (y, x)
-    };
-    
+    let (shorter, longer) = if x.len() <= y.len() { (x, y) } else { (y, x) };
+
     let mut prev = vec![0; shorter.len() + 1];
     let mut curr = vec![0; shorter.len() + 1];
-    
+
     for item in longer.iter() {
         std::mem::swap(&mut prev, &mut curr);
         curr[0] = 0;
-        
+
         for (j, shorter_item) in shorter.iter().enumerate() {
             if item == shorter_item {
                 curr[j + 1] = prev[j] + 1;
@@ -199,7 +194,7 @@ pub fn lcs_length_space_optimized<T: Eq>(x: &[T], y: &[T]) -> usize {
             }
         }
     }
-    
+
     curr[shorter.len()]
 }
 
@@ -250,4 +245,3 @@ mod tests {
         assert_eq!(length, 4);
     }
 }
-

@@ -80,7 +80,7 @@ mod tests {
         // Example from CLRS 11.3-4
         let m = 1000;
         let golden = (5.0_f64.sqrt() - 1.0) / 2.0;
-        
+
         assert_eq!(multiplication_hash(61, m, golden), 700);
         assert_eq!(multiplication_hash(62, m, golden), 318);
         assert_eq!(multiplication_hash(63, m, golden), 936);
@@ -93,13 +93,12 @@ mod tests {
         let m = 11;
         let hash1 = string_hash("hello", m);
         let hash2 = string_hash("world", m);
-        
+
         // Should produce valid hash values
         assert!(hash1 < m);
         assert!(hash2 < m);
-        
+
         // Same string should produce same hash
         assert_eq!(string_hash("test", m), string_hash("test", m));
     }
 }
-

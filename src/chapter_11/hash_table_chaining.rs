@@ -83,8 +83,11 @@ impl<K: PartialEq + Clone, V> HashTableChaining<K, V> {
     /// - Time: O(1) average case
     pub fn insert(&mut self, k: K, v: V) {
         let h = (self.hash_fn)(k.clone(), self.size);
-        let node = HashNode { key: k.clone(), value: v };
-        
+        let node = HashNode {
+            key: k.clone(),
+            value: v,
+        };
+
         // Check if key already exists and update
         if let Some(existing) = self.arr[h].iter_mut().find(|n| n.key == k) {
             existing.value = node.value;
@@ -125,10 +128,10 @@ mod tests {
     #[test]
     fn test_hash_table_chaining_basic() {
         let mut table = HashTableChaining::new(11, division_hash);
-        
+
         table.insert(5, "value5");
         table.insert(16, "value16"); // 16 % 11 = 5, collision with 5
-        
+
         assert_eq!(table.search(5), Some(&"value5"));
         assert_eq!(table.search(16), Some(&"value16"));
     }
@@ -138,11 +141,11 @@ mod tests {
         // Example from CLRS 11.2-2
         let mut table = HashTableChaining::new(9, division_hash);
         let keys = vec![5, 28, 19, 15, 20, 33, 12, 17, 10];
-        
+
         for key in keys {
             table.insert(key, format!("value{}", key));
         }
-        
+
         // Verify some keys
         assert_eq!(table.search(5), Some(&"value5".to_string()));
         assert_eq!(table.search(28), Some(&"value28".to_string()));
@@ -152,13 +155,12 @@ mod tests {
     #[test]
     fn test_hash_table_chaining_delete() {
         let mut table = HashTableChaining::new(11, division_hash);
-        
+
         table.insert(5, "value5");
         table.insert(16, "value16");
-        
+
         assert_eq!(table.delete(5), Some("value5"));
         assert_eq!(table.search(5), None);
         assert_eq!(table.search(16), Some(&"value16"));
     }
 }
-

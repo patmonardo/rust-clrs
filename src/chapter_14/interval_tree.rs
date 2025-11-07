@@ -116,7 +116,7 @@ impl<V> IntervalTree<V> {
                 if i.overlaps(&n.interval) {
                     return Some(&n.value);
                 }
-                
+
                 if n.left.is_some() && n.left.as_ref().unwrap().max >= i.low {
                     Self::search_node(&n.left, i)
                 } else {
@@ -149,7 +149,7 @@ impl<V> IntervalTree<V> {
                 if i.exactly_matches(&n.interval) {
                     return Some(&n.value);
                 }
-                
+
                 if i.high > n.max {
                     None
                 } else if i.low < n.interval.low {
@@ -247,7 +247,7 @@ mod tests {
         let i1 = Interval::new(1, 5);
         let i2 = Interval::new(3, 7);
         let i3 = Interval::new(6, 10);
-        
+
         assert!(i1.overlaps(&i2));
         assert!(!i1.overlaps(&i3));
         assert!(i2.overlaps(&i3));
@@ -265,11 +265,11 @@ mod tests {
         tree.insert(Interval::new(1, 5), "interval1");
         tree.insert(Interval::new(3, 7), "interval2");
         tree.insert(Interval::new(8, 10), "interval3");
-        
+
         // Search for overlapping interval - should find ANY overlapping interval
         assert!(tree.search(Interval::new(4, 6)).is_some()); // Overlaps with interval1 or interval2
         assert_eq!(tree.search(Interval::new(9, 11)), Some(&"interval3"));
-        
+
         // Search for non-overlapping interval
         assert_eq!(tree.search(Interval::new(11, 15)), None);
     }
@@ -279,7 +279,7 @@ mod tests {
         let mut tree = IntervalTree::new();
         tree.insert(Interval::new(1, 5), "interval1");
         tree.insert(Interval::new(3, 7), "interval2");
-        
+
         assert_eq!(tree.search_exactly(Interval::new(1, 5)), Some(&"interval1"));
         assert_eq!(tree.search_exactly(Interval::new(3, 7)), Some(&"interval2"));
         assert_eq!(tree.search_exactly(Interval::new(1, 6)), None); // Overlaps but not exact
@@ -291,11 +291,10 @@ mod tests {
         tree.insert(Interval::new(1, 5), "interval1");
         tree.insert(Interval::new(3, 7), "interval2");
         tree.insert(Interval::new(8, 10), "interval3");
-        
+
         // The root's max should be the maximum high endpoint
         if let Some(root) = &tree.root {
             assert_eq!(root.max, 10);
         }
     }
 }
-

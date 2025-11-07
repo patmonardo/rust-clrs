@@ -22,6 +22,14 @@ pub mod chapter_14;
 pub mod chapter_15;
 pub mod chapter_16;
 pub mod chapter_17;
+pub mod chapter_18;
+pub mod chapter_19;
+pub mod chapter_20;
+pub mod chapter_21;
+pub mod chapter_22;
+pub mod chapter_23;
+pub mod chapter_24;
+pub mod chapter_25;
 
 #[cfg(test)]
 mod tests {
@@ -30,4 +38,3 @@ mod tests {
         assert!(true);
     }
 }
-

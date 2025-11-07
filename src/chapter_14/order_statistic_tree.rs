@@ -101,16 +101,14 @@ impl<K: Ord, V> OrderStatisticTree<K, V> {
     fn rank_node(node: &Option<Box<OSTNode<K, V>>>, k: &K, mut r: usize) -> Option<usize> {
         match node {
             None => None,
-            Some(n) => {
-                match k.cmp(&n.key) {
-                    Ordering::Equal => Some(r + n.left_size() + 1),
-                    Ordering::Less => Self::rank_node(&n.left, k, r),
-                    Ordering::Greater => {
-                        r += n.left_size() + 1;
-                        Self::rank_node(&n.right, k, r)
-                    }
+            Some(n) => match k.cmp(&n.key) {
+                Ordering::Equal => Some(r + n.left_size() + 1),
+                Ordering::Less => Self::rank_node(&n.left, k, r),
+                Ordering::Greater => {
+                    r += n.left_size() + 1;
+                    Self::rank_node(&n.right, k, r)
                 }
-            }
+            },
         }
     }
 
@@ -133,16 +131,14 @@ impl<K: Ord, V> OrderStatisticTree<K, V> {
     fn key_rank_node(node: &Option<Box<OSTNode<K, V>>>, k: &K) -> Option<usize> {
         match node {
             None => None,
-            Some(n) => {
-                match k.cmp(&n.key) {
-                    Ordering::Equal => Some(n.left_size() + 1),
-                    Ordering::Less => Self::key_rank_node(&n.left, k),
-                    Ordering::Greater => {
-                        let right_rank = Self::key_rank_node(&n.right, k)?;
-                        Some(n.left_size() + 1 + right_rank)
-                    }
+            Some(n) => match k.cmp(&n.key) {
+                Ordering::Equal => Some(n.left_size() + 1),
+                Ordering::Less => Self::key_rank_node(&n.left, k),
+                Ordering::Greater => {
+                    let right_rank = Self::key_rank_node(&n.right, k)?;
+                    Some(n.left_size() + 1 + right_rank)
                 }
-            }
+            },
         }
     }
 
@@ -258,7 +254,7 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         assert_eq!(tree.size(), 3);
     }
 
@@ -270,7 +266,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.select(1), Some((&1, &"value1")));
         assert_eq!(tree.select(2), Some((&3, &"value3")));
         assert_eq!(tree.select(3), Some((&5, &"value5")));
@@ -286,7 +282,7 @@ mod tests {
         tree.insert(7, "value7");
         tree.insert(1, "value1");
         tree.insert(9, "value9");
-        
+
         assert_eq!(tree.rank(&1), Some(1));
         assert_eq!(tree.rank(&3), Some(2));
         assert_eq!(tree.rank(&5), Some(3));
@@ -300,10 +296,9 @@ mod tests {
         tree.insert(5, "value5");
         tree.insert(3, "value3");
         tree.insert(7, "value7");
-        
+
         assert_eq!(tree.key_rank(&3), Some(1));
         assert_eq!(tree.key_rank(&5), Some(2));
         assert_eq!(tree.key_rank(&7), Some(3));
     }
 }
-

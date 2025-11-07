@@ -211,11 +211,11 @@ mod tests {
     fn test_stack_basic() {
         let mut stack = Stack::new(5);
         assert!(stack.is_empty());
-        
+
         stack.push(1).unwrap();
         stack.push(2).unwrap();
         stack.push(3).unwrap();
-        
+
         assert_eq!(stack.pop(), Some(3));
         assert_eq!(stack.pop(), Some(2));
         assert_eq!(stack.pop(), Some(1));
@@ -255,7 +255,7 @@ mod tests {
         stacks.push1(2).unwrap();
         stacks.push2(10).unwrap();
         stacks.push2(9).unwrap();
-        
+
         assert_eq!(stacks.pop1(), Some(2));
         assert_eq!(stacks.pop2(), Some(9));
         assert_eq!(stacks.pop1(), Some(1));
@@ -272,4 +272,3 @@ mod tests {
         assert!(stacks.push1(4).is_err());
     }
 }
-

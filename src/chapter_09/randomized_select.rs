@@ -36,19 +36,19 @@ pub fn randomized_select<T: Ord + Clone>(arr: &mut [T], p: usize, r: usize, i: u
     if p == r {
         return arr[p].clone();
     }
-    
+
     // CLRS: q = RANDOMIZED-PARTITION(A, p, r)
     let q = randomized_partition(arr, p, r);
-    
+
     // CLRS: k = q - p + 1
     let k = q - p + 1;
-    
+
     // CLRS: if i == k
     if i == k {
         // CLRS: return A[q]
         return arr[q].clone();
     }
-    
+
     // CLRS: else if i < k
     if i < k {
         // CLRS: return RANDOMIZED-SELECT(A, p, q - 1, i)
@@ -88,10 +88,10 @@ pub fn randomized_select_iterative<T: Ord + Clone>(
         if p == r {
             return arr[p].clone();
         }
-        
+
         let q = randomized_partition(arr, p, r);
         let k = q - p + 1;
-        
+
         if i == k {
             return arr[q].clone();
         } else if i < k {
@@ -199,4 +199,3 @@ mod tests {
         assert_eq!(third, 3);
     }
 }
-

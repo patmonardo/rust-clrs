@@ -28,7 +28,7 @@ use rand::Rng;
 pub fn randomize_in_place<T>(arr: &mut [T]) {
     let mut rng = rand::thread_rng();
     let n = arr.len();
-    
+
     // CLRS: for i = 1 to n
     for i in 0..n {
         // CLRS: swap A[i] with A[RANDOM(i, n)]
@@ -67,7 +67,7 @@ pub fn randomize_in_place<T>(arr: &mut [T]) {
 pub fn permute_by_sorting<T: Clone>(arr: &[T]) -> Vec<T> {
     let n = arr.len();
     let mut rng = rand::thread_rng();
-    
+
     // CLRS: let P[1..n] be a new array
     // CLRS: for i = 1 to n, P[i] = RANDOM(1, n³)
     let n_cubed = (n * n * n) as i32;
@@ -78,12 +78,15 @@ pub fn permute_by_sorting<T: Clone>(arr: &[T]) -> Vec<T> {
             (i, priority)
         })
         .collect();
-    
+
     // CLRS: sort A, using P as sort keys
     priorities.sort_by_key(|&(_, priority)| priority);
-    
+
     // Build the permuted array
-    priorities.iter().map(|&(idx, _)| arr[idx].clone()).collect()
+    priorities
+        .iter()
+        .map(|&(idx, _)| arr[idx].clone())
+        .collect()
 }
 
 /// Generates a random m-element subset of {1, 2, ..., n}
@@ -117,25 +120,25 @@ pub fn random_sample(m: usize, n: usize) -> Vec<usize> {
     if m == 0 {
         return vec![];
     }
-    
+
     if m > n {
         panic!("Cannot sample {} elements from set of size {}", m, n);
     }
-    
+
     // CLRS: S = RANDOM-SAMPLE(m - 1, n - 1)
     let mut s = random_sample(m - 1, n - 1);
-    
+
     // CLRS: i = RANDOM(1, n)
     let mut rng = rand::thread_rng();
     let i = rng.gen_range(1..=n);
-    
+
     // CLRS: if i ∈ S, then S = S ∪ {n}, else S = S ∪ {i}
     if s.contains(&i) {
         s.push(n);
     } else {
         s.push(i);
     }
-    
+
     s.sort();
     s
 }
@@ -159,13 +162,13 @@ pub fn random_sample_alternative(m: usize, n: usize) -> Vec<usize> {
     if m > n {
         panic!("Cannot sample {} elements from set of size {}", m, n);
     }
-    
+
     // Create array [1, 2, ..., n]
     let mut arr: Vec<usize> = (1..=n).collect();
-    
+
     // Randomize in place
     randomize_in_place(&mut arr);
-    
+
     // Take first m elements
     arr.truncate(m);
     arr.sort();
@@ -182,7 +185,7 @@ mod tests {
         let mut arr = vec![1, 2, 3, 4, 5];
         let original = arr.clone();
         randomize_in_place(&mut arr);
-        
+
         // Should contain same elements
         arr.sort();
         assert_eq!(arr, original);
@@ -194,7 +197,7 @@ mod tests {
         let original_set: HashSet<_> = arr.iter().cloned().collect();
         randomize_in_place(&mut arr);
         let permuted_set: HashSet<_> = arr.iter().cloned().collect();
-        
+
         assert_eq!(original_set, permuted_set);
     }
 
@@ -202,10 +205,10 @@ mod tests {
     fn test_permute_by_sorting() {
         let arr = vec![1, 2, 3, 4, 5];
         let permuted = permute_by_sorting(&arr);
-        
+
         // Should have same length
         assert_eq!(permuted.len(), arr.len());
-        
+
         // Should contain same elements
         let original_set: HashSet<_> = arr.iter().cloned().collect();
         let permuted_set: HashSet<_> = permuted.iter().cloned().collect();
@@ -215,14 +218,14 @@ mod tests {
     #[test]
     fn test_random_sample() {
         let sample = random_sample(3, 10);
-        
+
         assert_eq!(sample.len(), 3);
         assert!(sample.iter().all(|&x| x >= 1 && x <= 10));
-        
+
         // Check all elements are distinct
         let unique: HashSet<_> = sample.iter().cloned().collect();
         assert_eq!(unique.len(), 3);
-        
+
         // Should be sorted
         let mut sorted = sample.clone();
         sorted.sort();
@@ -252,10 +255,10 @@ mod tests {
     #[test]
     fn test_random_sample_alternative() {
         let sample = random_sample_alternative(3, 10);
-        
+
         assert_eq!(sample.len(), 3);
         assert!(sample.iter().all(|&x| x >= 1 && x <= 10));
-        
+
         // Check all elements are distinct
         let unique: HashSet<_> = sample.iter().cloned().collect();
         assert_eq!(unique.len(), 3);
@@ -267,10 +270,10 @@ mod tests {
         for _ in 0..10 {
             let s1 = random_sample(5, 20);
             let s2 = random_sample_alternative(5, 20);
-            
+
             assert_eq!(s1.len(), 5);
             assert_eq!(s2.len(), 5);
-            
+
             let set1: HashSet<_> = s1.iter().cloned().collect();
             let set2: HashSet<_> = s2.iter().cloned().collect();
             assert_eq!(set1.len(), 5);
@@ -278,4 +281,3 @@ mod tests {
         }
     }
 }
-
