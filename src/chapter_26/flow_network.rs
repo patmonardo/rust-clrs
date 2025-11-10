@@ -88,7 +88,6 @@ where
         self.edges[edge_index].flow += amount;
         self.edges[reverse_index].flow -= amount;
     }
-
 }
 
 impl<W> fmt::Debug for FlowNetwork<W>
@@ -124,4 +123,3 @@ mod tests {
         assert_eq!(network.edges()[reverse].reverse, forward);
     }
 }
-

@@ -103,7 +103,10 @@ mod tests {
             result.distances,
             vec![Some(0), Some(1), Some(2), Some(1), Some(2)]
         );
-        assert_eq!(result.predecessors, vec![None, Some(0), Some(1), Some(0), Some(3)]);
+        assert_eq!(
+            result.predecessors,
+            vec![None, Some(0), Some(1), Some(0), Some(3)]
+        );
         assert_eq!(result.path_to(4), Some(vec![0, 3, 4]));
         assert_eq!(result.path_to(2), Some(vec![0, 1, 2]));
     }
@@ -116,11 +119,7 @@ mod tests {
         // vertex 3 is isolated
 
         let result = breadth_first_search(&graph, 0);
-        assert_eq!(
-            result.distances,
-            vec![Some(0), Some(1), Some(2), None]
-        );
+        assert_eq!(result.distances, vec![Some(0), Some(1), Some(2), None]);
         assert_eq!(result.path_to(3), None);
     }
 }
-

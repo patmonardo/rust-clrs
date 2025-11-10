@@ -34,12 +34,7 @@ pub fn strongly_connected_components(graph: &Graph) -> Vec<Vec<usize>> {
     components
 }
 
-fn collect_component(
-    graph: &Graph,
-    u: usize,
-    visited: &mut [bool],
-    component: &mut Vec<usize>,
-) {
+fn collect_component(graph: &Graph, u: usize, visited: &mut [bool], component: &mut Vec<usize>) {
     visited[u] = true;
     component.push(u);
 
@@ -75,10 +70,7 @@ mod tests {
         }
         components.sort_unstable_by_key(|component| component[0]);
 
-        assert_eq!(
-            components,
-            vec![vec![0, 1, 2], vec![3, 4, 5], vec![6, 7]]
-        );
+        assert_eq!(components, vec![vec![0, 1, 2], vec![3, 4, 5], vec![6, 7]]);
     }
 
     #[test]
@@ -93,4 +85,3 @@ mod tests {
         assert_eq!(components, vec![vec![0], vec![1], vec![2]]);
     }
 }
-

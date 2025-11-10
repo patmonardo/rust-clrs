@@ -121,10 +121,7 @@ mod tests {
         g.add_edge(0, 2);
         g.add_edge(2, 1);
 
-        assert_eq!(
-            g.into_adjacency_list(),
-            vec![vec![1, 2], vec![], vec![1]]
-        );
+        assert_eq!(g.into_adjacency_list(), vec![vec![1, 2], vec![], vec![1]]);
     }
 
     #[test]
@@ -133,10 +130,7 @@ mod tests {
         g.add_edge(0, 1);
         g.add_edge(1, 2);
 
-        assert_eq!(
-            g.into_adjacency_list(),
-            vec![vec![1], vec![0, 2], vec![1]]
-        );
+        assert_eq!(g.into_adjacency_list(), vec![vec![1], vec![0, 2], vec![1]]);
     }
 
     #[test]
@@ -146,4 +140,3 @@ mod tests {
         let _ = g.transpose();
     }
 }
-

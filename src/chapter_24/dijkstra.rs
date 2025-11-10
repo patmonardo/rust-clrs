@@ -103,4 +103,3 @@ mod tests {
         assert_eq!(result, Err(DijkstraError::NegativeEdgeWeight));
     }
 }
-

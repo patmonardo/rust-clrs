@@ -106,4 +106,3 @@ mod tests {
         assert_eq!(neighbors_1, vec![(0, 4)]);
     }
 }
-

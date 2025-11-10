@@ -54,11 +54,7 @@ where
     })
 }
 
-fn candidate_distance<W>(
-    u: usize,
-    weight: W,
-    distances: &[Option<W>],
-) -> Option<W>
+fn candidate_distance<W>(u: usize, weight: W, distances: &[Option<W>]) -> Option<W>
 where
     W: Copy + Add<Output = W>,
 {
@@ -118,7 +114,10 @@ mod tests {
             result.distances,
             vec![Some(0), Some(2), Some(4), Some(7), Some(-2)]
         );
-        assert_eq!(result.predecessors, vec![None, Some(2), Some(3), Some(0), Some(1)]);
+        assert_eq!(
+            result.predecessors,
+            vec![None, Some(2), Some(3), Some(0), Some(1)]
+        );
         assert_eq!(result.path_to(4), Some(vec![0, 3, 2, 1, 4]));
     }
 
@@ -133,4 +132,3 @@ mod tests {
         assert_eq!(result, Err(BellmanFordError::NegativeCycle));
     }
 }
-

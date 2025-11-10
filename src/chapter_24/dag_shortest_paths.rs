@@ -140,4 +140,3 @@ mod tests {
         assert_eq!(result, Err(DagShortestPathsError::NotDag));
     }
 }
-

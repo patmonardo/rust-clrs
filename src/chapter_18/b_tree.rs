@@ -143,13 +143,11 @@ impl<K: Ord, V> BTreeNode<K, V> {
             self.borrow_from_prev(idx);
         } else if idx + 1 < self.children.len() && self.children[idx + 1].keys.len() >= min_degree {
             self.borrow_from_next(idx);
+        } else if idx + 1 < self.children.len() {
+            self.merge_children(idx);
         } else {
-            if idx + 1 < self.children.len() {
-                self.merge_children(idx);
-            } else {
-                self.merge_children(idx - 1);
-                idx -= 1;
-            }
+            self.merge_children(idx - 1);
+            idx -= 1;
         }
         idx
     }
@@ -213,11 +211,11 @@ impl<K: Ord, V> BTreeNode<K, V> {
         left_child.values.push(value);
 
         let mut right_child = *right_child;
-        left_child.keys.extend(right_child.keys.drain(..));
-        left_child.values.extend(right_child.values.drain(..));
+        left_child.keys.append(&mut right_child.keys);
+        left_child.values.append(&mut right_child.values);
 
         if !left_child.leaf {
-            left_child.children.extend(right_child.children.drain(..));
+            left_child.children.append(&mut right_child.children);
         }
     }
 
@@ -330,10 +328,7 @@ impl<K: Ord, V> BTree<K, V> {
 
     /// Deletes `key` from the B-tree, returning the stored value if it existed
     pub fn delete(&mut self, key: &K) -> Option<V> {
-        let mut root = match self.root.take() {
-            None => return None,
-            Some(root) => root,
-        };
+        let mut root = self.root.take()?;
 
         let result = root.delete(key, self.min_degree);
 

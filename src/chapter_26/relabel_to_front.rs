@@ -1,70 +1,56 @@
-use std::cmp::Ordering;
-use std::collections::VecDeque;
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use std::ops::{AddAssign, Sub, SubAssign};
 
-use super::{FlowEdge, FlowNetwork};
+use super::FlowNetwork;
 
 /// Computes the maximum flow using the relabel-to-front (preflow-push) algorithm.
-pub fn relabel_to_front<W>(
-    network: &mut FlowNetwork<W>,
-    source: usize,
-    sink: usize,
-) -> W
+pub fn relabel_to_front<W>(network: &mut FlowNetwork<W>, source: usize, sink: usize) -> W
 where
-    W: Copy
-        + Ord
-        + Default
-        + AddAssign
-        + SubAssign
-        + Add<Output = W>
-        + Sub<Output = W>
-        + From<u8>,
+    W: Copy + Ord + Default + AddAssign + SubAssign + Sub<Output = W>,
 {
     assert!(source < network.vertex_count(), "source out of bounds");
     assert!(sink < network.vertex_count(), "sink out of bounds");
     assert!(source != sink, "source and sink must differ");
 
     let n = network.vertex_count();
-    let mut height = vec![W::default(); n];
+    let mut height = vec![0usize; n];
     let mut excess = vec![W::default(); n];
     let mut seen = vec![0usize; n];
-    let mut vertices: VecDeque<usize> = (0..n).filter(|&v| v != source && v != sink).collect();
+    let mut vertices: Vec<usize> = (0..n).filter(|&v| v != source && v != sink).collect();
 
-    height[source] = W::from(n as u8);
+    height[source] = n;
     initialize_preflow(network, source, &mut excess);
 
-    while let Some(u) = vertices.pop_front() {
+    let mut index = 0usize;
+    while index < vertices.len() {
+        let u = vertices[index];
         let old_height = height[u];
-        discharge(
-            network,
-            u,
-            sink,
-            &mut height,
-            &mut excess,
-            &mut seen,
-        );
+        discharge(network, u, &mut height, &mut excess, &mut seen);
         if height[u] > old_height {
-            vertices.push_front(u);
+            vertices.remove(index);
+            vertices.insert(0, u);
+            index = 0;
         } else {
-            vertices.push_back(u);
+            index += 1;
         }
     }
 
     excess[sink]
 }
 
-fn initialize_preflow<W>(
-    network: &mut FlowNetwork<W>,
-    source: usize,
-    excess: &mut [W],
-) where
-    W: Copy + Default + AddAssign + SubAssign,
+fn initialize_preflow<W>(network: &mut FlowNetwork<W>, source: usize, excess: &mut [W])
+where
+    W: Copy + Default + AddAssign + SubAssign + Sub<Output = W> + PartialOrd,
 {
-    for &edge_index in network.adjacency(source) {
-        let capacity = network.edges()[edge_index].capacity;
+    let outgoing = network.adjacency(source).to_vec();
+    for edge_index in outgoing {
+        let (capacity, target) = {
+            let edge = &network.edges()[edge_index];
+            (edge.capacity, edge.to)
+        };
         if capacity > W::default() {
             network.augment_edge(edge_index, capacity);
-            excess[network.edges()[edge_index].to] += capacity;
+            excess[source] -= capacity;
+            excess[target] += capacity;
         }
     }
 }
@@ -72,19 +58,11 @@ fn initialize_preflow<W>(
 fn discharge<W>(
     network: &mut FlowNetwork<W>,
     u: usize,
-    sink: usize,
-    height: &mut [W],
+    height: &mut [usize],
     excess: &mut [W],
     seen: &mut [usize],
 ) where
-    W: Copy
-        + Ord
-        + Default
-        + AddAssign
-        + SubAssign
-        + Add<Output = W>
-        + Sub<Output = W>
-        + From<u8>,
+    W: Copy + Ord + Default + AddAssign + SubAssign + Sub<Output = W>,
 {
     while excess[u] > W::default() {
         if seen[u] == network.adjacency(u).len() {
@@ -92,7 +70,7 @@ fn discharge<W>(
             seen[u] = 0;
         } else {
             let edge_index = network.adjacency(u)[seen[u]];
-            if push(network, edge_index, u, sink, height, excess) {
+            if push(network, edge_index, u, height, excess) {
                 continue;
             }
             seen[u] += 1;
@@ -104,51 +82,42 @@ fn push<W>(
     network: &mut FlowNetwork<W>,
     edge_index: usize,
     u: usize,
-    sink: usize,
-    height: &[W],
+    height: &[usize],
     excess: &mut [W],
 ) -> bool
 where
-    W: Copy
-        + Ord
-        + Default
-        + AddAssign
-        + SubAssign
-        + Add<Output = W>
-        + Sub<Output = W>,
+    W: Copy + Ord + Default + AddAssign + SubAssign + Sub<Output = W>,
 {
-    let edge = network.edges()[edge_index].clone();
+    let target = network.edges()[edge_index].to;
     let residual = network.residual_capacity(edge_index);
-    if residual == W::default() || height[u] <= height[edge.to] {
+    if residual == W::default() || height[u] <= height[target] {
         return false;
     }
 
     let amount = excess[u].min(residual);
     network.augment_edge(edge_index, amount);
     excess[u] -= amount;
-    if edge.to != sink {
-        excess[edge.to] += amount;
-    }
+    excess[target] += amount;
     true
 }
 
-fn relabel<W>(network: &FlowNetwork<W>, u: usize, height: &mut [W])
+fn relabel<W>(network: &FlowNetwork<W>, u: usize, height: &mut [usize])
 where
-    W: Copy + Ord + Default + AddAssign + From<u8>,
+    W: Copy + Default + Sub<Output = W> + PartialOrd,
 {
-    let mut min_height = None;
+    let mut min_height: Option<usize> = None;
     for &edge_index in network.adjacency(u) {
         let residual = network.residual_capacity(edge_index);
         if residual > W::default() {
             let edge_height = height[network.edges()[edge_index].to];
-            min_height = match min_height {
-                None => Some(edge_height),
-                Some(current) => Some(current.min(edge_height)),
-            };
+            min_height = Some(match min_height {
+                None => edge_height,
+                Some(current) => current.min(edge_height),
+            });
         }
     }
     if let Some(h) = min_height {
-        height[u] = h + W::from(1);
+        height[u] = h + 1;
     }
 }
 
@@ -174,4 +143,3 @@ mod tests {
         assert_eq!(max_flow, 23);
     }
 }
-

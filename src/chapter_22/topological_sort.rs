@@ -100,7 +100,10 @@ mod tests {
 
         for u in 0..graph.vertex_count() {
             for v in graph.neighbors_iter(u) {
-                assert!(position[u] < position[v], "edge {u}->{v} violates topological order");
+                assert!(
+                    position[u] < position[v],
+                    "edge {u}->{v} violates topological order"
+                );
             }
         }
     }
@@ -116,4 +119,3 @@ mod tests {
         assert_eq!(result, Err(TopologicalSortError::NotDag));
     }
 }
-

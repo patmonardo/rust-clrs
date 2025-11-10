@@ -93,8 +93,21 @@ mod tests {
         let mut edges = mst.edges.clone();
         edges.sort_unstable_by_key(|edge| (edge.u.min(edge.v), edge.u.max(edge.v)));
 
-        assert_eq!(edges, vec![MstEdge { u: 0, v: 1, weight: 1 }, MstEdge { u: 1, v: 2, weight: 2 }]);
+        assert_eq!(
+            edges,
+            vec![
+                MstEdge {
+                    u: 0,
+                    v: 1,
+                    weight: 1
+                },
+                MstEdge {
+                    u: 1,
+                    v: 2,
+                    weight: 2
+                }
+            ]
+        );
         assert_eq!(mst.total_weight, 3);
     }
 }
-

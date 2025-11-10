@@ -149,4 +149,3 @@ mod tests {
         assert_eq!(reweighted.edges(), vec![(0, 1, 0), (1, 0, 4)]);
     }
 }
-

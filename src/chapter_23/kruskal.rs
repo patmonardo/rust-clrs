@@ -78,4 +78,3 @@ mod tests {
         assert_eq!(mst.total_weight, 3);
     }
 }
-

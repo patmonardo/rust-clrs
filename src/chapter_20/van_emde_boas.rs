@@ -9,7 +9,7 @@ fn u_size(power: usize) -> usize {
 }
 
 fn upper_power(power: usize) -> usize {
-    (power + 1) / 2
+    power.div_ceil(2)
 }
 
 fn lower_power(power: usize) -> usize {
@@ -142,7 +142,7 @@ impl VanEmdeBoasTree {
                         .insert(position);
                 }
 
-                if self.max.map_or(true, |current_max| x > current_max) {
+                if self.max.is_none_or(|current_max| x > current_max) {
                     self.max = Some(x);
                 }
             }

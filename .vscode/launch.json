@@ -1,0 +1,133 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug unit tests in library 'clrs'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test"
+                ]
+            }
+        },
+        {
+            "name": "Debug example 'linear_search_average'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--example=linear_search_average"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in example 'linear_search_average'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--example=linear_search_average"
+                ]
+            }
+        },
+        {
+            "name": "Debug example 'linear_search_invariant'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--example=linear_search_invariant"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in example 'linear_search_invariant'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--example=linear_search_invariant"
+                ]
+            }
+        },
+        {
+            "name": "Debug example 'maximum_subarray_exposition'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--example=maximum_subarray_exposition"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in example 'maximum_subarray_exposition'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--example=maximum_subarray_exposition"
+                ]
+            }
+        },
+        {
+            "name": "Debug example 'merge_sort_recurrence'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--example=merge_sort_recurrence"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in example 'merge_sort_recurrence'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--example=merge_sort_recurrence"
+                ]
+            }
+        },
+        {
+            "name": "Debug example 'two_sum_exposition'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--example=two_sum_exposition"
+                ]
+            },
+            "args": []
+        },
+        {
+            "name": "Debug unit tests in example 'two_sum_exposition'",
+            "type": "lldb",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--example=two_sum_exposition"
+                ]
+            }
+        }
+    ]
+}

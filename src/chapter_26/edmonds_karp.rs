@@ -1,14 +1,11 @@
 use std::cmp::min;
+use std::collections::VecDeque;
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use super::FlowNetwork;
 
 /// Computes the maximum flow using the Edmonds-Karp variant of Ford-Fulkerson.
-pub fn edmonds_karp<W>(
-    network: &mut FlowNetwork<W>,
-    source: usize,
-    sink: usize,
-) -> W
+pub fn edmonds_karp<W>(network: &mut FlowNetwork<W>, source: usize, sink: usize) -> W
 where
     W: Copy + Ord + Default + AddAssign + SubAssign + Add<Output = W> + Sub<Output = W>,
 {
@@ -19,6 +16,27 @@ where
     let mut max_flow = W::default();
 
     while let Some(path) = bfs(network, source, sink) {
+        let mut residual_capacity = W::default();
+        let mut first = true;
+        for edge_index in &path {
+            let capacity = network.residual_capacity(*edge_index);
+            residual_capacity = if first {
+                first = false;
+                capacity
+            } else {
+                min(residual_capacity, capacity)
+            };
+        }
+
+        max_flow += residual_capacity;
+        for edge_index in path {
+            network.augment_edge(edge_index, residual_capacity);
+        }
+    }
+
+    max_flow
+}
+
 fn bfs<W>(network: &FlowNetwork<W>, source: usize, sink: usize) -> Option<Vec<usize>>
 where
     W: Copy + PartialOrd + Default + Sub<Output = W>,
@@ -41,9 +59,7 @@ where
         }
     }
 
-    if parent[sink].is_none() {
-        return None;
-    }
+    parent[sink]?;
 
     let mut path = Vec::new();
     let mut current = sink;
@@ -54,26 +70,6 @@ where
     }
     path.reverse();
     Some(path)
-}
-        let mut residual_capacity = W::default();
-        let mut first = true;
-        for edge_index in &path {
-            let capacity = network.residual_capacity(*edge_index);
-            residual_capacity = if first {
-                first = false;
-                capacity
-            } else {
-                min(residual_capacity, capacity)
-            };
-        }
-
-        max_flow += residual_capacity;
-        for edge_index in path {
-            network.augment_edge(edge_index, residual_capacity);
-        }
-    }
-
-    max_flow
 }
 
 #[cfg(test)]
@@ -99,4 +95,3 @@ mod tests {
         assert_eq!(max_flow, 23);
     }
 }
-

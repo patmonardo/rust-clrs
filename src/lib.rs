@@ -30,6 +30,7 @@ pub mod chapter_22;
 pub mod chapter_23;
 pub mod chapter_24;
 pub mod chapter_25;
+pub mod chapter_26;
 
 #[cfg(test)]
 mod tests {

@@ -2,8 +2,9 @@ use std::ops::{Add, Sub};
 
 use super::MatrixGraph;
 use crate::chapter_24::{
-    bellman_ford, dijkstra,
+    bellman_ford,
     bellman_ford::BellmanFordError,
+    dijkstra,
     dijkstra::DijkstraError,
     weighted_digraph::{ShortestPathResult, WeightedDigraph},
 };
@@ -31,10 +32,9 @@ where
         extended.add_edge(super_source, v, W::default());
     }
 
-    let potentials = bellman_ford(&extended, super_source)
-        .map_err(|err| match err {
-            BellmanFordError::NegativeCycle => JohnsonError::NegativeCycle,
-        })?;
+    let potentials = bellman_ford(&extended, super_source).map_err(|err| match err {
+        BellmanFordError::NegativeCycle => JohnsonError::NegativeCycle,
+    })?;
 
     let mut h = vec![W::default(); n];
     for v in 0..n {
@@ -46,7 +46,9 @@ where
     let mut distances = vec![vec![None; n]; n];
     for u in 0..n {
         let result = dijkstra(&reweighted, u).map_err(|err| match err {
-            DijkstraError::NegativeEdgeWeight => unreachable!("reweighting guarantees non-negative edges"),
+            DijkstraError::NegativeEdgeWeight => {
+                unreachable!("reweighting guarantees non-negative edges")
+            }
         })?;
         convert_distances(u, &h, &result, &mut distances);
     }
@@ -112,11 +114,26 @@ mod tests {
 
         let matrix = johnson_distance_matrix(&graph).expect("no negative cycles");
 
-        assert_eq!(matrix.weights()[0], vec![Some(0), Some(-5), Some(-9), Some(-4), Some(-2)]);
-        assert_eq!(matrix.weights()[1], vec![None, Some(0), Some(1), Some(7), Some(9)]);
-        assert_eq!(matrix.weights()[2], vec![None, Some(4), Some(0), Some(11), Some(13)]);
-        assert_eq!(matrix.weights()[3], vec![None, Some(-1), Some(-5), Some(0), Some(2)]);
-        assert_eq!(matrix.weights()[4], vec![None, Some(6), Some(7), Some(13), Some(0)]);
+        assert_eq!(
+            matrix.weights()[0],
+            vec![Some(0), Some(-5), Some(-9), Some(-4), Some(-2)]
+        );
+        assert_eq!(
+            matrix.weights()[1],
+            vec![None, Some(0), Some(1), Some(7), Some(9)]
+        );
+        assert_eq!(
+            matrix.weights()[2],
+            vec![None, Some(4), Some(0), Some(11), Some(13)]
+        );
+        assert_eq!(
+            matrix.weights()[3],
+            vec![None, Some(-1), Some(-5), Some(0), Some(2)]
+        );
+        assert_eq!(
+            matrix.weights()[4],
+            vec![None, Some(6), Some(7), Some(13), Some(0)]
+        );
     }
 
     #[test]
@@ -130,4 +147,3 @@ mod tests {
         assert_eq!(result, Err(JohnsonError::NegativeCycle));
     }
 }
-
