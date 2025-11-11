@@ -46,8 +46,11 @@ fn horner_with_invariant(coeffs: &[f64], x: f64) -> (f64, OperationCounts) {
     println!("Horner's rule trace:");
 
     for (step, i) in (0..n).rev().enumerate() {
-        debug_assert!(horner_invariant_holds(coeffs, x, y, i),
-            "Loop invariant violated at i = {}", i);
+        debug_assert!(
+            horner_invariant_holds(coeffs, x, y, i),
+            "Loop invariant violated at i = {}",
+            i
+        );
         counts.outer_iterations += 1;
 
         let coeff = coeffs[i];
@@ -64,8 +67,12 @@ fn horner_with_invariant(coeffs: &[f64], x: f64) -> (f64, OperationCounts) {
     }
 
     let direct = evaluate_polynomial(coeffs, x);
-    debug_assert!((y - direct).abs() < 1e-9,
-        "Horner result {:?} should match direct evaluation {:?}", y, direct);
+    debug_assert!(
+        (y - direct).abs() < 1e-9,
+        "Horner result {:?} should match direct evaluation {:?}",
+        y,
+        direct
+    );
 
     (y, counts)
 }
@@ -109,7 +116,10 @@ fn naive_polynomial_evaluation(coeffs: &[f64], x: f64) -> (f64, OperationCounts)
         y += term;
         counts.additions += 1;
 
-        println!("    x^k = {:.6}, term = {:.6}, partial sum y = {:.6}", power, term, y);
+        println!(
+            "    x^k = {:.6}, term = {:.6}, partial sum y = {:.6}",
+            power, term, y
+        );
     }
 
     (y, counts)

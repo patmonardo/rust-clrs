@@ -32,7 +32,12 @@ fn demonstrate_build_max_heap(mut arr: Vec<i32>) {
 
     let start = (arr.len() / 2) - 1;
     for (step, i) in (0..=start).rev().enumerate() {
-        println!("Step {}: heapify subtree rooted at index {} (value = {})", step + 1, i, arr[i]);
+        println!(
+            "Step {}: heapify subtree rooted at index {} (value = {})",
+            step + 1,
+            i,
+            arr[i]
+        );
         let before = arr.clone();
         let heap_size = arr.len();
         narrate_heapify(&before, &mut arr, heap_size, i);
@@ -52,16 +57,27 @@ fn demonstrate_heapsort(mut arr: Vec<i32>) {
     println!("\nPhase 2: repeatedly remove the max, shrinking the heap prefix.\n");
 
     for heap_size in (1..arr.len()).rev() {
-        println!("Heap prefix before extraction (size = {}): {:?}", heap_size + 1, &arr[..=heap_size]);
+        println!(
+            "Heap prefix before extraction (size = {}): {:?}",
+            heap_size + 1,
+            &arr[..=heap_size]
+        );
         debug_assert!(is_max_heap_prefix(&arr, heap_size + 1));
 
-        println!("  Swap max element {} with arr[{}] = {}", arr[0], heap_size, arr[heap_size]);
+        println!(
+            "  Swap max element {} with arr[{}] = {}",
+            arr[0], heap_size, arr[heap_size]
+        );
         arr.swap(0, heap_size);
         println!("  After swap: {:?}", &arr[..=heap_size]);
 
         max_heapify(&mut arr, heap_size, 0);
         debug_assert!(is_max_heap_prefix(&arr, heap_size));
-        println!("  Heap restored on prefix (size = {}): {:?}\n", heap_size, &arr[..heap_size]);
+        println!(
+            "  Heap restored on prefix (size = {}): {:?}\n",
+            heap_size,
+            &arr[..heap_size]
+        );
     }
 
     println!("Sorted result: {:?}\n", arr);
@@ -83,7 +99,9 @@ fn demonstrate_runtime_bounds() {
     println!("Summing log k from k = n down to 1 yields Θ(n log n).\n");
 
     println!("Correctness sketch:");
-    println!("  • Invariant (heap prefix): before each extraction, arr[0..heap_size) is a max-heap.");
+    println!(
+        "  • Invariant (heap prefix): before each extraction, arr[0..heap_size) is a max-heap."
+    );
     println!("  • Each swap moves the maximum to its final position at the end.");
     println!("  • MAX-HEAPIFY plus the inductive invariant ensures the prefix remains a heap.");
     println!("  • After n − 1 extractions the array is fully sorted in nondecreasing order.\n");
@@ -95,7 +113,10 @@ fn narrate_heapify(before: &[i32], arr: &mut [i32], heap_size: usize, i: usize) 
         HeapifyDecision::AlreadyHeap => {
             println!("  Children are in order; no swap needed.");
         }
-        HeapifyDecision::SwapWithLeft { left_index, left_value } => {
+        HeapifyDecision::SwapWithLeft {
+            left_index,
+            left_value,
+        } => {
             println!(
                 "  Left child {} (index {}) exceeds parent {}; swapping and recursing.",
                 left_value, left_index, before[i]
@@ -138,7 +159,10 @@ fn describe_diff(before: &[i32], after: &[i32]) -> Option<String> {
 
 enum HeapifyDecision {
     AlreadyHeap,
-    SwapWithLeft { left_index: usize, left_value: i32 },
+    SwapWithLeft {
+        left_index: usize,
+        left_value: i32,
+    },
     SwapWithRight {
         right_index: usize,
         right_value: i32,

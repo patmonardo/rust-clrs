@@ -226,10 +226,6 @@ impl<K: Ord, V> OSTNode<K, V> {
     fn left_size(&self) -> usize {
         self.left.as_ref().map(|n| n.size).unwrap_or(0)
     }
-
-    fn right_size(&self) -> usize {
-        self.right.as_ref().map(|n| n.size).unwrap_or(0)
-    }
 }
 
 impl<K: Ord, V> Default for OrderStatisticTree<K, V> {

@@ -19,15 +19,19 @@ fn main() {
     println!("Original array:     {:?}", data);
     let pass_counts = bubble_sort_with_invariants(&mut data);
     println!("Sorted array:       {:?}", data);
-    println!("Pass statistics:    {{ outer_passes: {}, comparisons: {}, swaps: {} }}",
-        pass_counts.outer_passes, pass_counts.comparisons, pass_counts.swaps);
+    println!(
+        "Pass statistics:    {{ outer_passes: {}, comparisons: {}, swaps: {} }}",
+        pass_counts.outer_passes, pass_counts.comparisons, pass_counts.swaps
+    );
 
     // A second run on an already-sorted array demonstrates the Θ(n^2) best case.
     let mut sorted_again = data.clone();
     let pass_counts_sorted = bubble_sort_with_invariants(&mut sorted_again);
     println!("Already-sorted run: sorted = {:?}", sorted_again);
-    println!("Pass statistics:    {{ outer_passes: {}, comparisons: {}, swaps: {} }}",
-        pass_counts_sorted.outer_passes, pass_counts_sorted.comparisons, pass_counts_sorted.swaps);
+    println!(
+        "Pass statistics:    {{ outer_passes: {}, comparisons: {}, swaps: {} }}",
+        pass_counts_sorted.outer_passes, pass_counts_sorted.comparisons, pass_counts_sorted.swaps
+    );
 }
 
 #[derive(Debug, Default)]
@@ -45,14 +49,28 @@ where
     let n = arr.len();
 
     for i in 0..n {
-        debug_assert!(outer_invariant_holds(arr, i), "outer invariant violated before iteration i={i}");
+        debug_assert!(
+            outer_invariant_holds(arr, i),
+            "outer invariant violated before iteration i={i}"
+        );
         counts.outer_passes += 1;
         println!("\nOuter iteration i={}: current array = {:?}", i, arr);
 
         for j in ((i + 1)..n).rev() {
-            debug_assert!(inner_invariant_holds(arr, i, j), "inner invariant violated at (i={}, j={})", i, j);
+            debug_assert!(
+                inner_invariant_holds(arr, i, j),
+                "inner invariant violated at (i={}, j={})",
+                i,
+                j
+            );
             counts.comparisons += 1;
-            println!("  Comparing positions {} and {}: {:?} vs {:?}", j - 1, j, arr[j - 1], arr[j]);
+            println!(
+                "  Comparing positions {} and {}: {:?} vs {:?}",
+                j - 1,
+                j,
+                arr[j - 1],
+                arr[j]
+            );
 
             if arr[j] < arr[j - 1] {
                 arr.swap(j, j - 1);
@@ -62,7 +80,10 @@ where
         }
     }
 
-    debug_assert!(outer_invariant_holds(arr, n), "outer invariant violated after completion");
+    debug_assert!(
+        outer_invariant_holds(arr, n),
+        "outer invariant violated after completion"
+    );
     counts
 }
 

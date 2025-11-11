@@ -17,7 +17,10 @@ fn main() {
     println!("Inversions (i < j, A[i] > A[j]): {:?}", inversions);
 
     let (_, insertion_count, insertion_swaps) = insertion_sort_with_count(sample.clone());
-    println!("Insertion sort counted {} inversions via swaps", insertion_count);
+    println!(
+        "Insertion sort counted {} inversions via swaps",
+        insertion_count
+    );
     println!("Total swaps performed: {}\n", insertion_swaps);
 
     let (sorted, merge_count) = count_inversions_merge(sample.clone());
@@ -31,7 +34,10 @@ fn main() {
     // Demonstrate worst-case array of size 6.
     let worst = vec![6, 5, 4, 3, 2, 1];
     let (_, worst_count) = count_inversions_merge(worst.clone());
-    println!("Worst-case array {:?} has {} inversions (n(n-1)/2)", worst, worst_count);
+    println!(
+        "Worst-case array {:?} has {} inversions (n(n-1)/2)",
+        worst, worst_count
+    );
 }
 
 fn list_inversions(arr: &[i32]) -> Vec<(usize, usize)> {
@@ -55,7 +61,12 @@ fn insertion_sort_with_count(mut arr: Vec<i32>) -> (Vec<i32>, u64, u64) {
         let key = arr[j];
         let mut i = j as isize - 1;
 
-        println!("  Inserting arr[{}]={}: prefix before insert {:?}", j, key, &arr[..j]);
+        println!(
+            "  Inserting arr[{}]={}: prefix before insert {:?}",
+            j,
+            key,
+            &arr[..j]
+        );
         while i >= 0 && arr[i as usize] > key {
             arr[(i + 1) as usize] = arr[i as usize];
             i -= 1;

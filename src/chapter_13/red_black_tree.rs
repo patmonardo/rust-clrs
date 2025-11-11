@@ -133,40 +133,46 @@ impl<K: Ord, V> RedBlackTree<K, V> {
         }
     }
 
-    /// Performs a left rotation around node x
+    /// Performs a left rotation around the given node.
     ///
-    /// This corresponds to LEFT-ROTATE from CLRS Section 13.2.
-    /// This is a helper function used internally.
-    fn left_rotate_internal(node: &mut Box<RBNode<K, V>>) {
-        if let Some(mut y) = node.right.take() {
-            // Turn y's left subtree into x's right subtree
-            let y_left = y.left.take();
-            node.right = y_left;
+    /// This is the `LEFT-ROTATE` procedure from CLRS Section 13.2. The rotation
+    /// mutates the subtree rooted at `node` in-place, maintaining the binary-search-tree
+    /// property while moving the original right child into the root position.
+    ///
+    /// # Panics
+    /// Panics if the provided node has no right child, since a left rotation is
+    /// undefined in that case.
+    pub fn left_rotate(node: &mut Box<RBNode<K, V>>) {
+        let mut y = node
+            .right
+            .take()
+            .expect("left_rotate requires node.right to exist");
 
-            // Exchange the entire node contents
-            // Make x y's left child, then replace node with y
-            let mut x = std::mem::replace(node, y);
-            x.right = node.left.take();
-            node.left = Some(x);
-        }
+        let beta = y.left.take();
+
+        let mut x = std::mem::replace(node, y);
+        x.right = beta;
+        node.left = Some(x);
     }
 
-    /// Performs a right rotation around node y
+    /// Performs a right rotation around the given node.
     ///
-    /// This corresponds to RIGHT-ROTATE from CLRS Section 13.2.
-    /// This is a helper function used internally.
-    fn right_rotate_internal(node: &mut Box<RBNode<K, V>>) {
-        if let Some(mut x) = node.left.take() {
-            // Turn x's right subtree into y's left subtree
-            let x_right = x.right.take();
-            node.left = x_right;
+    /// This is the `RIGHT-ROTATE` procedure from CLRS Section 13.2.
+    ///
+    /// # Panics
+    /// Panics if the provided node has no left child, since a right rotation is
+    /// undefined in that case.
+    pub fn right_rotate(node: &mut Box<RBNode<K, V>>) {
+        let mut x = node
+            .left
+            .take()
+            .expect("right_rotate requires node.left to exist");
 
-            // Exchange the entire node contents
-            // Make y x's right child, then replace node with x
-            let mut y = std::mem::replace(node, x);
-            y.left = node.right.take();
-            node.right = Some(y);
-        }
+        let beta = x.right.take();
+
+        let mut y = std::mem::replace(node, x);
+        y.left = beta;
+        node.right = Some(y);
     }
 
     /// Finds the minimum key in the tree
